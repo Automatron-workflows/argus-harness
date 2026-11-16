@@ -49,6 +49,8 @@ for a preserved evidence page.
 ```
 
 - `${ENV_VAR}` is resolved at load time. A missing variable fails the read.
+- `method: "POST"` may include a literal `body` (for example, a JSON query). The
+  body is not environment-substituted; keep secrets in headers.
 - `preset: "titan-bundle"` maps:
   `metrics[key].latest.valueNumeric`, `.latest.snapshotDate`,
   `.latest.computedAt` and `metrics[key].history[]`.

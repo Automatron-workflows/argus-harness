@@ -17,7 +17,7 @@ Locked fields:
 | `key` | Stable join key across the harness, BigQuery, Looker and source rows. Lowercase snake_case. |
 | `label` | One human label, not a chart title that drifts between pages. |
 | `description` | The definition and its boundary. Long enough to disambiguate. |
-| `unit` | `currency_eur`, `count`, `percent`, `ratio`, `days`, `hours`, `duration_s`, `text`. Percent is a fraction. |
+| `unit` | `currency_eur`, `count`, `percent`, `ratio`, `days`, `hours`, `duration_s`. Percent is a fraction. |
 | `direction` | `up`, `down` or `neutral`. Lower-is-better metrics must not show a green increase. |
 | `aggregation` | `latest`, `sum`, `cumulative`, `rolling` or `average`. A rolling count is not a calendar month. |
 | `nullPolicy` | `gap` or `unavailable`. Never silently zero. |

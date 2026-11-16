@@ -26,7 +26,7 @@ keep provider-specific metadata in your own files.
 ```
 
 - `unit`: `currency_eur`, `count`, `percent`, `ratio`, `days`, `hours`,
-  `duration_s`, `text`.
+  `duration_s`.
 - `direction`: `up`, `down`, `neutral`.
 - `aggregation`: `latest`, `sum`, `cumulative`, `rolling`, `average`.
 - `nullPolicy`: `gap` (a missing day is a gap) or `unavailable` (a missing latest

@@ -13,7 +13,6 @@ export const UNITS = Object.freeze([
   "days",
   "hours",
   "duration_s",
-  "text",
 ]);
 
 function number(value, options) {

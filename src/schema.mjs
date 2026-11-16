@@ -231,6 +231,9 @@ export function validateSource(input, path = "source") {
       ...(config.timeoutMs === undefined
         ? { timeoutMs: 15000 }
         : { timeoutMs: number(config.timeoutMs, `${path}.config.timeoutMs`, { min: 500, max: 120000, integer: true }) }),
+      ...(config.body === undefined
+        ? {}
+        : { body: string(config.body, `${path}.config.body`, { max: 10000 }) }),
       ...(config.preset === undefined
         ? {}
         : { preset: oneOf(config.preset, ["argus-snapshot", "titan-bundle"], `${path}.config.preset`) }),

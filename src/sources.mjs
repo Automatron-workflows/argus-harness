@@ -245,6 +245,7 @@ async function fetchJson({ source, env, fetchImpl, timeoutMs, window }) {
     const response = await fetchImpl(url, {
       method: source.config.method ?? "GET",
       headers: resolveHeaders(source.config.headers, env),
+      ...(source.config.method === "POST" && source.config.body ? { body: source.config.body } : {}),
       signal: controller.signal,
       redirect: "follow",
     });

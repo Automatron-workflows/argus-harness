@@ -131,7 +131,7 @@ export function lookerFields(catalog) {
   return metricRows(catalog).map((metric) => ({
     name: metric.key,
     label: metric.label,
-    type: metric.unit === "count" || metric.unit === "currency_eur" ? "NUMBER" : metric.unit === "text" ? "TEXT" : "NUMBER",
+    type: "NUMBER",
     semanticType:
       metric.unit === "currency_eur"
         ? "CURRENCY_EUR"
