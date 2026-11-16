@@ -27,6 +27,10 @@ npm run check
 
 ## Browser
 
+The public workshop is deployed at
+`https://automatron-workflows.github.io/argus-harness/demo/`. The `test` and
+`workshop` GitHub Actions workflows pass on the initial commit.
+
 Inspected in Chrome at 1440×900 and 390×844:
 
 - The demo loads with no page or console errors.
