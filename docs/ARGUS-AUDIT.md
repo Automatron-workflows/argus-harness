@@ -1,8 +1,7 @@
 # Argus audit · 16 November 2026
 
-Audit of the internal Argus dashboard at
-`/Users/matthiasmandiau/Projects/upswitch/apps/argus` and the primitives that
-were moved into this harness. The source revision reviewed was
+Audit of the internal Argus dashboard (`UpswitchEU/argus`, `apps/argus`) and the
+primitives that were moved into this harness. The source revision reviewed was
 `7b2aecb` (`UpswitchEU/argus`, 16 September 2026). The goal is reuse without
 copying Upswitch credentials, private tables or provider-specific endpoints.
 
