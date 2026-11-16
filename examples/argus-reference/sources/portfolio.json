@@ -1,0 +1,23 @@
+{
+  "schema": "argus.source/1",
+  "id": "portfolio-argus",
+  "label": "Preserved portfolio snapshot",
+  "description": "The public 20 October 2026 Argus aggregate published with the Upswitch case study. The harness fetches the preserved JSON at render or audit time; no Upswitch rows are stored in this repository.",
+  "kind": "http-json",
+  "freshnessHours": 8760,
+  "status": {
+    "state": "live",
+    "label": "Preserved snapshot",
+    "detail": "Public 20 October 2026 archive. This is not a live Argus source and later cancellations or shutdowns are outside it.",
+    "coverage": "88 measured days · 35 standard metric keys"
+  },
+  "config": {
+    "url": "https://matthias-mandiau-portfolio.lovable.app/case-studies/upswitch/argus-results/results.json",
+    "method": "GET",
+    "timeoutMs": 20000,
+    "metricOverrides": {
+      "valuations_total": "userValuations.valuations_total",
+      "valuations_30d": "userValuations.valuations_30d"
+    }
+  }
+}

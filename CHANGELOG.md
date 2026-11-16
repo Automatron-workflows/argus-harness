@@ -8,5 +8,5 @@
 - Added static JSON, HTTP JSON, CSV and BigQuery adapters.
 - Added the static HTML/SVG renderer and the Aurora pack.
 - Added the starter project, public workshop and Looker Studio field map.
-- Added 21 Node tests, including SHA-256 contract fingerprints, and the `npm run check` gate.
+- Added 23 Node tests, including SHA-256 contract fingerprints, the 35-key Argus reference catalog and metric overrides, and the `npm run check` gate.
 - Recorded the Argus source audit and remaining limits.

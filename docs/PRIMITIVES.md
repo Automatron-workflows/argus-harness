@@ -114,6 +114,11 @@ The bridge generates a shared warehouse layer: `metric_catalog`, `metric_daily`,
 `metric_status`, `v_metric_latest`, `v_metric_daily`, `v_metric_health`. The
 field map carries the same labels, units, directions and descriptions.
 
+The 35 standard Argus definitions are preserved in
+[`examples/argus-reference`](../examples/argus-reference). The catalog is
+metadata only; the source fetches the public portfolio snapshot at render time
+and uses `metricOverrides` for the corrected user-report product history.
+
 It does not generate a Looker Studio connector. Looker Studio is a peer surface;
 its blends and calculated fields can diverge from the catalog and must be
 reviewed.

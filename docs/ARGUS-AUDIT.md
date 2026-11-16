@@ -59,8 +59,23 @@ copying Upswitch credentials, private tables or provider-specific endpoints.
    include. The snapshot carries `coverage`, and the audit warns when it is
    missing.
 8. **Evidence travels with the dashboard.** The audit emits `argus.evidence/1`
-   with the dashboard id, source, timestamp and every check. A screenshot is not
-   evidence.
+   with the dashboard id, source, timestamp, every check and SHA-256 fingerprints
+   of the catalog, dashboard and snapshot. A screenshot is not evidence.
+9. **Product history is corrected, not hidden.** The preserved
+   `metrics.valuations_total` history contains older mixed totals (a maximum of
+   457,774), while `userValuations.valuations_total` restores the user-report
+   series (118 → 148). The Argus reference uses `metricOverrides` to read the
+   corrected series; the raw series remains in the archive with its documented
+   caveat.
+
+## Compatibility catalog
+
+[`examples/argus-reference`](../examples/argus-reference) encodes the 35 standard
+Argus keys with their units, aggregations, null policies, owners, targets and
+source caveats. It is metadata only. The source fetches the public portfolio
+snapshot at render time, and `metricOverrides` selects the corrected product
+series. `doctor` validates the catalog offline; `render` and `audit` need network
+access to the public snapshot.
 
 ## Deliberately out of scope
 

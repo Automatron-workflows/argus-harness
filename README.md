@@ -61,6 +61,11 @@ The starter contains ten fictional metrics, a 60-day snapshot, one dashboard and
 a deliberate gap. Replace `data/snapshot.json` with your own measured rows. No
 account, npm install, model call or telemetry is required.
 
+The **Argus reference** in `examples/argus-reference` contains the 35 preserved
+metric definitions with their real units, aggregations, null policies, owners and
+targets. It fetches the public portfolio snapshot at render time; no Upswitch
+rows are stored in this repository.
+
 For the workshop:
 
 ```sh
@@ -172,6 +177,7 @@ for the current record and its limits.
 | `src/cli.mjs` | `init`, `doctor`, `catalog`, `render`, `audit`, `looker`, `bigquery-sql` |
 | `packs/aurora` | The dark Aurora tokens extracted from Argus |
 | `examples/starter` | A complete fictional project |
+| `examples/argus-reference` | The 35 preserved Argus metric definitions, reading the public portfolio snapshot |
 | `demo` | The public workshop |
 | `docs/PRIMITIVES.md` | What was locked and why |
 | `docs/ARGUS-AUDIT.md` | The extraction audit from Argus source |

@@ -8,9 +8,9 @@ import { sha256Hex } from "../src/digest.mjs";
 import { formatMetric } from "../src/format.mjs";
 import { loadProject, dashboardMetrics } from "../src/project.mjs";
 import { renderDashboard } from "../src/render.mjs";
-import { validateDashboard, validateEvidence, validateMetric, validateSnapshot, HarnessError } from "../src/schema.mjs";
+import { validateDashboard, validateEvidence, validateMetric, validateSource, validateSnapshot, HarnessError } from "../src/schema.mjs";
 import { growthRates, niceTicks, normalizeHistory, segments } from "../src/series.mjs";
-import { loadSnapshot } from "../src/sources.mjs";
+import { loadSnapshot, snapshotFromGeneric } from "../src/sources.mjs";
 
 const root = resolve("examples/starter");
 const read = async (path) => JSON.parse(await readFile(path, "utf8"));
@@ -217,4 +217,57 @@ test("lower-is-better deltas and percent bars keep their semantics", () => {
   const html = renderDashboard({ dashboard, catalog: new Map([[metric.key, metric]]), snapshot, pack: undefined });
   assert.match(html, /data-tone="bad"/);
   assert.match(html, /33\.00%/);
+});
+
+test("the Argus reference project locks the 35 preserved metric definitions", async () => {
+  const project = await loadProject("examples/argus-reference");
+  assert.equal(project.metrics.size, 35);
+  assert.equal(project.sources.size, 1);
+  assert.equal(project.dashboards.size, 1);
+  assert.equal(project.metrics.get("cac_payback_months").unit, "months");
+  assert.equal(project.metrics.get("ltv_cac_ratio").nullPolicy, "unavailable");
+  assert.equal(project.metrics.get("gross_revenue_collected_eur").aggregation, "cumulative");
+  assert.equal(project.metrics.get("active_listings_count").unit, "count");
+  assert.ok(project.metrics.has("valuations_total"));
+  assert.ok(project.metrics.has("traffic_to_signup_rate_30d"));
+  assert.equal(project.sources.get("portfolio-argus").freshnessHours, 8760);
+});
+
+test("metric overrides use the corrected product history without hiding gaps", async () => {
+  const project = await loadProject(root);
+  const dashboard = project.dashboards.get("growth");
+  const source = validateSource({
+    schema: "argus.source/1",
+    id: "rows",
+    label: "Rows",
+    description: "Rows",
+    kind: "http-json",
+    config: {
+      url: "http://example.test/rows",
+      metricOverrides: { reports_generated_total: "corrected.reports" },
+    },
+  });
+  const json = {
+    metrics: {
+      reports_generated_total: {
+        value: 999999,
+        date: "2026-11-15",
+        history: [
+          { date: "2026-11-14", value: 999998 },
+          { date: "2026-11-15", value: 999999 },
+        ],
+      },
+      active_accounts: { value: 4, date: "2026-11-15", history: [{ date: "2026-11-15", value: 4 }] },
+    },
+    corrected: {
+      reports: [
+        { date: "2026-11-13", value: 118 },
+        { date: "2026-11-15", value: 120 },
+      ],
+    },
+  };
+  const snapshot = snapshotFromGeneric({ json, source, dashboard, metrics: project.metrics, now: new Date("2026-11-15T12:00:00Z") });
+  assert.equal(snapshot.metrics.reports_generated_total.value, 120);
+  assert.deepEqual(snapshot.metrics.reports_generated_total.history.map((point) => point.date), ["2026-11-13", "2026-11-15"]);
+  assert.equal(snapshot.metrics.active_accounts.value, 4);
 });

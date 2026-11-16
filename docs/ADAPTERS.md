@@ -56,6 +56,8 @@ for a preserved evidence page.
   `.latest.computedAt` and `metrics[key].history[]`.
 - A generic response can use `response: { "metricsPath": "data.metrics",
   "valuePath": "value", "datePath": "date", "historyPath": "history" }`.
+- `metricOverrides` maps a key to another JSON path when a corrected series lives
+  elsewhere. It changes where the history is read, not the metric contract.
 - A non-2xx response, timeout or parse error returns an `unavailable` snapshot.
   The CLI prints the detail; the audit fails.
 

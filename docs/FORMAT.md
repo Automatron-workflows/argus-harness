@@ -61,13 +61,16 @@ keep provider-specific metadata in your own files.
 Kinds:
 
 - `static-json`: `{ "path": "data/snapshot.json" }`
-- `http-json`: `{ "url", "method", "headers", "timeoutMs", "preset", "response" }`
+- `http-json`: `{ "url", "method", "headers", "timeoutMs", "preset", "response", "metricOverrides" }`
 - `csv`: `{ "path", "delimiter" }`
 - `bigquery`: project/dataset/table and column names.
 
 `headers` values may use `${ENV_VAR}`. Do not put a literal token in a project.
 `preset: "titan-bundle"` maps a bundle with `metrics[key].latest` and
 `metrics[key].history`. `response` maps a generic JSON shape with dot paths.
+`metricOverrides` maps a metric key to an alternate JSON path when the preserved
+export stores a corrected series elsewhere (for example, user-report history vs
+an older mixed total).
 
 ## Dashboard — `argus.dashboard/1`
 

@@ -146,8 +146,7 @@ function dashboardMetricsFor(dashboard) {
   return [...keys];
 }
 
-function snapshotFromTitanBundle({ json, source, dashboard, metrics, now }) {
-  const bundle = getPath(json, source.config.response?.metricsPath ?? "metrics") ?? json.metrics ?? json;
+function snapshotFromTitanBundle({ json, source, dashboard, metrics, now }) {  const bundle = getPath(json, source.config.response?.metricsPath ?? "metrics") ?? json.metrics ?? json;
   const rows = [];
   let latestComputedAt = 0;
   for (const [key, raw] of Object.entries(bundle ?? {})) {
@@ -164,7 +163,7 @@ function snapshotFromTitanBundle({ json, source, dashboard, metrics, now }) {
       if (day && pointValue !== null) rows.push({ metric_key: key, metric_date: day, value: pointValue, source: latest.source });
     }
   }
-  const snapshot = snapshotFromRows({ rows, source, dashboard, metrics, now });
+  const snapshot = snapshotFromRows({ rows, source, dashboard, metrics, now, status: source.status });
   return latestComputedAt
     ? validateSnapshot({ ...snapshot, asOf: new Date(latestComputedAt).toISOString(), status: { ...snapshot.status, computedAt: new Date(latestComputedAt).toISOString() } })
     : snapshot;
@@ -172,25 +171,37 @@ function snapshotFromTitanBundle({ json, source, dashboard, metrics, now }) {
 
 function snapshotFromGeneric({ json, source, dashboard, metrics, now }) {
   if (json?.schema === "argus.snapshot/1") return validateSnapshot(json);
-  if (Array.isArray(json)) return snapshotFromRows({ rows: rowsFrom(json, source), source, dashboard, metrics, now });
-  if (Array.isArray(json?.rows)) return snapshotFromRows({ rows: rowsFrom(json.rows, source), source, dashboard, metrics, now });
+  if (Array.isArray(json)) return snapshotFromRows({ rows: rowsFrom(json, source), source, dashboard, metrics, now, status: source.status });
+  if (Array.isArray(json?.rows)) return snapshotFromRows({ rows: rowsFrom(json.rows, source), source, dashboard, metrics, now, status: source.status });
   if (json?.metrics && typeof json.metrics === "object") {
     const rows = [];
     let latestComputedAt = 0;
     for (const [key, raw] of Object.entries(json.metrics)) {
       if (raw === null || typeof raw !== "object") continue;
-      const value = numeric(raw.value ?? raw.latest?.valueNumeric ?? raw.latest?.value);
-      const date = normalizeDay(raw.date ?? raw.latest?.snapshotDate ?? raw.latest?.date ?? "");
+      const overridePath = source.config.metricOverrides?.[key];
+      const override = overridePath ? getPath(json, overridePath) : null;
+      const history = Array.isArray(override)
+        ? override
+        : Array.isArray(raw.history)
+          ? raw.history
+          : [];
+      const last = history.at(-1);
+      const value = Array.isArray(override)
+        ? numeric(last?.value)
+        : numeric(raw.value ?? raw.latest?.valueNumeric ?? raw.latest?.value);
+      const date = Array.isArray(override)
+        ? normalizeDay(last?.date ?? "")
+        : normalizeDay(raw.date ?? raw.latest?.snapshotDate ?? raw.latest?.date ?? "");
       const computed = Date.parse(raw.latest?.computedAt ?? raw.computedAt ?? "");
       if (Number.isFinite(computed)) latestComputedAt = Math.max(latestComputedAt, computed);
       if (value !== null && date) rows.push({ metric_key: key, metric_date: date, value, source: raw.source });
-      for (const point of Array.isArray(raw.history) ? raw.history : []) {
+      for (const point of history) {
         const day = normalizeDay(point.date);
         const pointValue = numeric(point.value);
         if (day && pointValue !== null) rows.push({ metric_key: key, metric_date: day, value: pointValue, source: raw.source });
       }
     }
-    const snapshot = snapshotFromRows({ rows, source, dashboard, metrics, now });
+    const snapshot = snapshotFromRows({ rows, source, dashboard, metrics, now, status: source.status });
     return latestComputedAt
       ? validateSnapshot({ ...snapshot, asOf: new Date(latestComputedAt).toISOString(), status: { ...snapshot.status, computedAt: new Date(latestComputedAt).toISOString() } })
       : snapshot;
@@ -212,7 +223,7 @@ function snapshotFromGeneric({ json, source, dashboard, metrics, now }) {
         if (day && pointValue !== null) mapped.push({ metric_key: key, metric_date: day, value: pointValue, source: source.id });
       }
     }
-    return snapshotFromRows({ rows: mapped, source, dashboard, metrics, now });
+    return snapshotFromRows({ rows: mapped, source, dashboard, metrics, now, status: source.status });
   }
   throw new Error("The source response did not match a supported snapshot or row shape");
 }
@@ -321,13 +332,13 @@ export async function loadSnapshot({
     const text = await readFile(file, "utf8");
     const table = parseCsv(text, source.config.delimiter ?? ",");
     if (table.length < 2) {
-      return snapshotFromRows({ rows: [], source, dashboard, metrics: project.metrics, now });
+      return snapshotFromRows({ rows: [], source, dashboard, metrics: project.metrics, now, status: source.status });
     }
     const header = table[0].map((name) => name.trim());
     const rows = table.slice(1).map((cells) =>
       Object.fromEntries(header.map((name, index) => [name, cells[index] ?? ""])),
     );
-    return snapshotFromRows({ rows: rowsFrom(rows, source), source, dashboard, metrics: project.metrics, now });
+    return snapshotFromRows({ rows: rowsFrom(rows, source), source, dashboard, metrics: project.metrics, now, status: source.status });
   }
   if (source.kind === "http-json") {
     try {
@@ -350,7 +361,7 @@ export async function loadSnapshot({
   if (source.kind === "bigquery") {
     try {
       const rows = await runBigQuery({ source, window: trailingWindow(nowIso(now).slice(0, 10), dashboard.window.days), bqBin });
-      return snapshotFromRows({ rows: rowsFrom(rows, source), source, dashboard, metrics: project.metrics, now });
+      return snapshotFromRows({ rows: rowsFrom(rows, source), source, dashboard, metrics: project.metrics, now, status: source.status });
     } catch (error) {
       return emptySnapshot({
         source,

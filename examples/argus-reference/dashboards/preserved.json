@@ -1,0 +1,140 @@
+{
+  "schema": "argus.dashboard/1",
+  "id": "preserved",
+  "title": "Argus · preserved results",
+  "description": "The 20 October 2026 aggregate published with the Upswitch case study. A read-only snapshot; later cancellations and shutdowns are outside it.",
+  "source": "portfolio-argus",
+  "window": {
+    "days": 90
+  },
+  "kpis": [
+    {
+      "metric": "users_total",
+      "label": "Registered identities",
+      "help": "Accounts are not unique firms or paying customers.",
+      "accent": "teal"
+    },
+    {
+      "metric": "active_users_30d",
+      "label": "Active · 30d",
+      "help": "Sign-in, session or recorded login.",
+      "accent": "violet"
+    },
+    {
+      "metric": "signups_30d",
+      "label": "New · 30d",
+      "help": "Non-admin registrations. A rolling count.",
+      "accent": "amber"
+    },
+    {
+      "metric": "email_verified_rate",
+      "label": "Email verified",
+      "help": "A stored verification ratio, not activation.",
+      "accent": "mint"
+    }
+  ],
+  "sections": [
+    {
+      "id": "audience",
+      "eyebrow": "01",
+      "title": "Audience",
+      "caption": "Registered identities, recent activity and rolling signups. Historical account counts, not unique firms or paying customers.",
+      "layout": "split",
+      "panels": [
+        {
+          "kind": "chart",
+          "title": "Registered and active identities",
+          "subtitle": "Measured daily snapshots. Missing dates stay blank.",
+          "series": [
+            {
+              "metric": "users_total",
+              "label": "Registered",
+              "color": "teal"
+            },
+            {
+              "metric": "active_users_30d",
+              "label": "Active · 30d",
+              "color": "violet"
+            },
+            {
+              "metric": "signups_30d",
+              "label": "Signups · 30d",
+              "color": "amber"
+            }
+          ],
+          "chartType": "line"
+        },
+        {
+          "kind": "chart",
+          "title": "Completed reports",
+          "subtitle": "Cumulative user reports. The stored count can include demonstrations and internal use.",
+          "series": [
+            {
+              "metric": "valuations_total",
+              "label": "Reports",
+              "color": "teal"
+            }
+          ],
+          "chartType": "area"
+        }
+      ]
+    },
+    {
+      "id": "commercial",
+      "eyebrow": "02",
+      "title": "Commercial evidence",
+      "caption": "Historical cash and paid-period equivalents. These are not renewed subscriptions, net revenue or current ARR.",
+      "layout": "equal",
+      "panels": [
+        {
+          "kind": "chart",
+          "title": "Recorded cumulative receipts",
+          "subtitle": "Gross EUR receipts before refunds and chargebacks.",
+          "series": [
+            {
+              "metric": "gross_revenue_collected_eur",
+              "label": "Gross receipts",
+              "color": "teal"
+            }
+          ],
+          "chartType": "area"
+        },
+        {
+          "kind": "chart",
+          "title": "Paid MRR",
+          "subtitle": "A stored paid-period equivalent, historically VAT-inclusive.",
+          "series": [
+            {
+              "metric": "mrr_eur",
+              "label": "Paid MRR",
+              "color": "violet"
+            }
+          ],
+          "chartType": "line"
+        }
+      ]
+    },
+    {
+      "id": "product",
+      "eyebrow": "03",
+      "title": "Product output",
+      "caption": "Completed reports in the trailing 30 days. Reports are not customers.",
+      "layout": "full",
+      "panels": [
+        {
+          "kind": "chart",
+          "title": "Reports · 30d",
+          "series": [
+            {
+              "metric": "valuations_30d",
+              "label": "Reports · 30d",
+              "color": "teal"
+            }
+          ],
+          "chartType": "area"
+        }
+      ]
+    }
+  ],
+  "note": "Preserved public snapshot. The harness catalog contains definitions only; Upswitch rows live in the portfolio archive. Placeholder unit-economics metrics stay unavailable."
+}

@@ -1,0 +1,704 @@
+[
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "active_listings_count",
+    "label": "Active listings",
+    "description": "Stored active marketplace listings at the snapshot.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Marketplace"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "active_users_30d",
+    "label": "Active identities · 30d",
+    "description": "Identities with a sign-in, session or recorded login in the trailing 30 days. Activity is not retention.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "arpu_eur",
+    "label": "ARPU proxy",
+    "description": "A stored composite proxy for revenue per user. It is not a renewed subscription ARPU or a customer outcome.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "average",
+    "nullPolicy": "gap",
+    "owner": "Finance",
+    "target": {
+      "value": 1050,
+      "label": "€1,050 year-one target"
+    },
+    "notes": "Composite proxy; preserve the caveat."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "arr_committed_eur",
+    "label": "Catalogue ARR equivalent",
+    "description": "Twelve times the catalogue monthly value. A proxy plan value, not booked ARR.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "arr_eur",
+    "label": "Paid ARR equivalent",
+    "description": "Twelve times the stored paid monthly equivalent. A historical annualised equivalent, not current bookings or net revenue.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "avg_deal_size_eur",
+    "label": "Average deal size",
+    "description": "Stored average completed-deal value. With no closed deals, the zero is not an established average.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "average",
+    "nullPolicy": "gap",
+    "owner": "Marketplace",
+    "target": {
+      "value": 500000,
+      "label": "€500k target"
+    },
+    "notes": "No closed-won deal in the preserved snapshot."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "avg_sales_cycle_days",
+    "label": "Sales-cycle proxy",
+    "description": "Stored sales-cycle proxy. With no closed outcomes it is not an established sales-cycle estimate.",
+    "unit": "days",
+    "direction": "down",
+    "aggregation": "average",
+    "nullPolicy": "gap",
+    "owner": "Marketplace",
+    "target": {
+      "value": 67.5,
+      "band": [
+        45,
+        90
+      ],
+      "label": "45–90 day band"
+    },
+    "notes": "No closed outcomes; zero is stored."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "avg_signup_to_first_pdf_days",
+    "label": "Signup to first PDF",
+    "description": "Mean days from signup to the first completed report. Lower is better; the stored value is a historical mean.",
+    "unit": "days",
+    "direction": "down",
+    "aggregation": "average",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "target": {
+      "value": 7,
+      "label": "≤7 day target"
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "cac_payback_months",
+    "label": "CAC payback",
+    "description": "Placeholder metric. No measured payback is available; the source zero is not an instant payback.",
+    "unit": "months",
+    "direction": "down",
+    "aggregation": "latest",
+    "nullPolicy": "unavailable",
+    "owner": "Finance",
+    "target": {
+      "value": 13,
+      "band": [
+        12,
+        14
+      ],
+      "label": "12–14 month band"
+    },
+    "notes": "Placeholder — not measured."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "churn_rate_30d",
+    "label": "Stored churn · 30d",
+    "description": "Cancelled paid subscriptions divided by paid users in the trailing 30 days. A proxy ratio, not cohort retention.",
+    "unit": "percent",
+    "direction": "down",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Finance",
+    "target": {
+      "value": 0.05,
+      "label": "5% target"
+    },
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    },
+    "notes": "Composite proxy."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "deals_closed_won_30d",
+    "label": "Closed-won deals · 30d",
+    "description": "Completed marketplace deals in the trailing 30 calendar days.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Marketplace",
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "deals_closed_won_ytd",
+    "label": "Closed-won deals · YTD",
+    "description": "Completed marketplace deals in the year to the snapshot. Zero is measured; there is no recorded closed-won deal.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Marketplace",
+    "window": {
+      "kind": "calendar",
+      "start": "2026-01-01",
+      "end": "2026-12-31"
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "deals_in_pipeline",
+    "label": "Deals in pipeline",
+    "description": "Open, unclosed marketplace conversations or deals at the snapshot.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Marketplace"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "email_verified_rate",
+    "label": "Email verified",
+    "description": "Stored user-verification ratio at the snapshot. It is not an activation or retention measure.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Growth"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "free_to_listing_rate_30d",
+    "label": "Free to listing · 30d",
+    "description": "A stored proxy for free accounts creating a listing in the trailing 30 days. Not a matched funnel.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "target": {
+      "value": 0.03,
+      "label": "3% target"
+    },
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    },
+    "notes": "Composite proxy."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "free_to_paid_rate_30d",
+    "label": "Free to paid · 30d",
+    "description": "A stored proxy for free-to-non-free plan conversion in the trailing 30 days. It does not prove customer conversion.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "target": {
+      "value": 0.04,
+      "label": "4% target"
+    },
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    },
+    "notes": "Composite proxy."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "gross_revenue_collected_eur",
+    "label": "Recorded gross receipts",
+    "description": "Cumulative gross EUR receipts before refunds and chargebacks. It can include internal or test activity.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "cumulative",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "integration_connection_rate",
+    "label": "Accounting connection rate",
+    "description": "Distinct eligible advisers with an accounting connection divided by the eligible denominator. A snapshot proxy.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Product",
+    "target": {
+      "value": 0.65,
+      "label": "65% target"
+    },
+    "notes": "Denominator is 80 eligible advisers, not the 81 first-role advisers."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "listing_to_closed_rate_ytd",
+    "label": "Listing to closed · YTD",
+    "description": "Completed deals divided by listings in the year to the snapshot. A zero ratio with no closed deals is not a track record.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Marketplace",
+    "target": {
+      "value": 0.275,
+      "band": [
+        0.25,
+        0.3
+      ],
+      "label": "25–30% (2026)"
+    },
+    "window": {
+      "kind": "calendar",
+      "start": "2026-01-01",
+      "end": "2026-12-31"
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "lost_mrr_30d_eur",
+    "label": "Lost MRR · 30d",
+    "description": "Committed MRR from cancellations in the trailing 30 days, at plan price. Not refunds or net revenue.",
+    "unit": "currency_eur",
+    "direction": "down",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Finance",
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "ltv_cac_ratio",
+    "label": "LTV / CAC",
+    "description": "Placeholder metric. The source contains a placeholder zero; the harness keeps it unavailable rather than showing a measured zero.",
+    "unit": "ratio",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "unavailable",
+    "owner": "Finance",
+    "target": {
+      "value": 3.5,
+      "label": "3.5:1 target"
+    },
+    "notes": "Placeholder — not measured."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "mrr_by_role",
+    "label": "MRR by role · stored aggregate",
+    "description": "The source key is a role map. The preserved export stores one aggregate value; the role drilldown is not reconstructed.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "mrr_committed_eur",
+    "label": "Catalogue MRR",
+    "description": "Active and trialing subscriptions priced at the catalogue plan. A proxy plan value, not collected cash.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "mrr_eur",
+    "label": "Paid MRR",
+    "description": "Invoice-backed recurring revenue for paid subscriptions. A stored paid-period equivalent, historically VAT-inclusive; not an annualised estimate.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "new_listings_30d",
+    "label": "New listings · 30d",
+    "description": "Listings created in the trailing 30 calendar days.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Marketplace",
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "new_mrr_30d_eur",
+    "label": "New MRR · 30d",
+    "description": "Committed MRR added by subscriptions starting in the trailing 30 days, priced at the full plan. Not cash collected.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Finance",
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "nrr_30d",
+    "label": "Net revenue retention · 30d",
+    "description": "Placeholder metric. The source contains a placeholder zero; the harness keeps it unavailable rather than claiming retention.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "unavailable",
+    "owner": "Finance",
+    "target": {
+      "value": 1.1,
+      "label": "110% year-two target"
+    },
+    "notes": "Placeholder — not measured."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "paid_advisors",
+    "label": "Paid advisers",
+    "description": "Advisers with a paid plan at the snapshot. The source can include internal or test rows.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "paid_users",
+    "label": "Non-free plan rows",
+    "description": "Rows on a non-free plan at the snapshot. Rows are not six verified paying firms or renewed subscriptions.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "revenue_per_closed_deal_eur",
+    "label": "Revenue per closed deal",
+    "description": "Stored proxy. With no closed deals it is not a measured transaction value.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "average",
+    "nullPolicy": "gap",
+    "owner": "Marketplace",
+    "target": {
+      "value": 15000,
+      "label": "€15k target"
+    },
+    "notes": "Composite proxy; zero closed deals."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "signups_30d",
+    "label": "New identities · 30d",
+    "description": "Non-admin registrations in the trailing 30 calendar days. A rolling count, not a customer cohort.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "traffic_to_signup_rate_30d",
+    "label": "Traffic to signup · 30d",
+    "description": "New identities divided by tracked visitor identities in the trailing 30 days. Separate populations; not a matched conversion funnel.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "target": {
+      "value": 0.05,
+      "label": "5% target"
+    },
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    },
+    "notes": "13 signups ÷ 143 tracked identities in the preserved snapshot."
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "users_total",
+    "label": "Registered identities",
+    "description": "Permanent non-admin Auth identities at the snapshot. Accounts are not unique firms or paying customers.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "cumulative",
+    "nullPolicy": "gap",
+    "owner": "Growth"
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "valuations_30d",
+    "label": "Completed reports · 30d",
+    "description": "Completed user reports in the trailing 30 calendar days. Not 30-day customers.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Product",
+    "target": {
+      "value": 50,
+      "label": "50 per month"
+    },
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "version": 1,
+    "source": {
+      "id": "portfolio-argus",
+      "field": "value"
+    },
+    "key": "valuations_total",
+    "label": "Completed reports",
+    "description": "Cumulative completed user reports. The stored count can include demonstrations and internal use.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "cumulative",
+    "nullPolicy": "gap",
+    "owner": "Product",
+    "target": {
+      "value": 1000,
+      "label": "1k milestone"
+    }
+  }
+]

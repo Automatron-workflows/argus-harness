@@ -139,13 +139,15 @@ export function lookerFields(catalog) {
           ? "PERCENT"
           : metric.unit === "days"
             ? "DURATION_DAYS"
-            : metric.unit === "hours"
-              ? "DURATION_HOURS"
-              : metric.unit === "duration_s"
-                ? "DURATION_SECONDS"
-                : metric.unit === "ratio"
-                  ? "RATIO"
-                  : "NUMBER",
+            : metric.unit === "months"
+              ? "NUMBER"
+              : metric.unit === "hours"
+                ? "DURATION_HOURS"
+                : metric.unit === "duration_s"
+                  ? "DURATION_SECONDS"
+                  : metric.unit === "ratio"
+                    ? "RATIO"
+                    : "NUMBER",
     aggregation: metric.aggregation === "cumulative" ? "MAX" : metric.aggregation === "average" ? "AVERAGE" : metric.aggregation === "sum" ? "SUM" : "LATEST",
     description: `${metric.description} Null policy: ${metric.nullPolicy}. Owner: ${metric.owner}.`,
     unit: metric.unit,

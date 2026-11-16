@@ -1,0 +1,10 @@
+{
+  "schema": "argus.project/1",
+  "id": "argus-reference",
+  "name": "Argus reference",
+  "pack": "aurora",
+  "metrics": "metrics",
+  "sources": "sources",
+  "dashboards": "dashboards",
+  "defaultDashboard": "preserved"
+}

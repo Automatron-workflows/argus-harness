@@ -249,6 +249,18 @@ export function validateSource(input, path = "source") {
             ),
           }
         : {}),
+      ...(config.metricOverrides
+        ? {
+            metricOverrides: Object.freeze(
+              Object.fromEntries(
+                Object.entries(object(config.metricOverrides, `${path}.config.metricOverrides`)).map(([key, value]) => [
+                  string(key, `${path}.config.metricOverrides.${key}`, { max: 64, pattern: METRIC_KEY }),
+                  string(value, `${path}.config.metricOverrides.${key}`, { max: 200 }),
+                ]),
+              ),
+            ),
+          }
+        : {}),
     });
   } else {
     const project = string(config.project, `${path}.config.project`, { max: 128, pattern: /^[A-Za-z0-9_.:-]+$/ });
@@ -283,6 +295,7 @@ export function validateSource(input, path = "source") {
       source.freshnessHours === undefined
         ? 26
         : number(source.freshnessHours, `${path}.freshnessHours`, { min: 1, max: 8760 }),
+    ...(source.status ? { status: status(source.status, `${path}.status`) } : {}),
     ...(optionalString(source.asOfField, `${path}.asOfField`, { max: 200 })
       ? { asOfField: source.asOfField }
       : {}),

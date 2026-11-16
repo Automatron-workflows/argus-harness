@@ -11,6 +11,7 @@ export const UNITS = Object.freeze([
   "percent",
   "ratio",
   "days",
+  "months",
   "hours",
   "duration_s",
 ]);
@@ -42,6 +43,8 @@ export function formatMetric(value, unit, options = {}) {
       return `${number(value, { maximumFractionDigits: decimals ?? 1 })}×`;
     case "days":
       return `${number(value, { maximumFractionDigits: decimals ?? 1 })} ${Math.abs(value) === 1 ? "day" : "days"}`;
+    case "months":
+      return `${number(value, { maximumFractionDigits: decimals ?? 1 })} ${Math.abs(value) === 1 ? "month" : "months"}`;
     case "hours":
       return `${number(value, { maximumFractionDigits: decimals ?? 1 })} ${Math.abs(value) === 1 ? "hour" : "hours"}`;
     case "duration_s": {
