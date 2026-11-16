@@ -78,6 +78,7 @@ export function renderCss(pack) {
 .ah-pill[data-state="live"] { color: var(--ah-color-primary); border-color: color-mix(in srgb, var(--ah-color-primary) 35%, transparent); }
 .ah-pill[data-state="warn"], .ah-pill[data-state="stale"], .ah-pill[data-state="partial"] { color: var(--ah-color-warning); border-color: color-mix(in srgb, var(--ah-color-warning) 35%, transparent); }
 .ah-pill[data-state="fail"], .ah-pill[data-state="unavailable"], .ah-pill[data-state="critical"] { color: var(--ah-color-danger); border-color: color-mix(in srgb, var(--ah-color-danger) 35%, transparent); }
+.ah-source-note { margin: 10px 0 0; max-width: 900px; font-size: 12px; line-height: 1.55; color: var(--ah-color-muted); }
 .ah-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--ah-space-gap); margin-top: 24px; }
 .ah-kpi { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 20px; border: 1px solid color-mix(in srgb, var(--ah-color-text) 8%, transparent); border-radius: var(--ah-space-radius); background: color-mix(in srgb, var(--ah-color-surface) 82%, transparent); }
 .ah-kpi-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--ah-color-muted); }
@@ -352,6 +353,7 @@ ${includeStyles ? `<style>${renderCss(pack)}</style>` : ""}
     <h1>${escape(dashboard.title)}</h1>
     <p class="ah-lede">${escape(dashboard.description)}</p>
     <div class="ah-pills"><span class="ah-pill">${escape(formatWindow(snapshot.window))}</span><span class="ah-pill">As of ${escape(formatAsOf(snapshot.asOf))}</span><span class="ah-pill" data-state="${statusTone}">${escape(snapshot.status.label)}</span></div>
+    ${snapshot.status.detail || snapshot.status.coverage ? `<p class="ah-source-note">${escape([snapshot.status.detail, snapshot.status.coverage].filter(Boolean).join(" · "))}</p>` : ""}
     <section class="ah-kpis" aria-label="Key metrics">${kpis}</section>
     ${sections}
     ${dashboard.note ? `<p class="ah-note">${escape(dashboard.note)}</p>` : ""}
