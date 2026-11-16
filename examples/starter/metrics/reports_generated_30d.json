@@ -1,0 +1,16 @@
+{
+  "schema": "argus.metric/1",
+  "key": "reports_generated_30d",
+  "label": "Reports · 30d",
+  "description": "Completed reports in the trailing 30 calendar days. Deliberately sparse in the starter snapshot to demonstrate a real gap.",
+  "unit": "count",
+  "direction": "up",
+  "aggregation": "rolling",
+  "nullPolicy": "gap",
+  "owner": "Product",
+  "version": 1,
+  "window": {
+    "kind": "trailing",
+    "days": 30
+  }
+}

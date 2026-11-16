@@ -1,0 +1,32 @@
+name: Bug report
+description: A reproducible harness, renderer or audit failure
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command, the expected result and the actual result.
+    validations:
+      required: true
+  - type: textarea
+    id: project
+    attributes:
+      label: Minimal project
+      description: The metric, dashboard, source and a few snapshot rows. Remove secrets and private data.
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node version
+      placeholder: "20.19.6"
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: What you already checked
+      description: Browser width, source state, audit output, console errors.

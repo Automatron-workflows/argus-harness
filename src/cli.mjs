@@ -1,0 +1,267 @@
+import { cp, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { auditDashboard, evidenceExitCode } from "./audit.mjs";
+import { buildBigQuerySql } from "./bigquery.mjs";
+import { trailingWindow } from "./calendar.mjs";
+import { formatMetric } from "./format.mjs";
+import { bigQueryDdl, lookerFields, lookerFieldsCsv, lookerReadme } from "./looker.mjs";
+import { loadProject, writeJson, inside } from "./project.mjs";
+import { renderDashboardPage } from "./render.mjs";
+import { loadSnapshot } from "./sources.mjs";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(HERE, "..");
+const STARTER = join(ROOT, "examples", "starter");
+
+const HELP = `Argus Harness — dashboards that keep definitions, freshness and missing data visible.
+
+Usage:
+  argus-harness init <dir> [--template starter]
+  argus-harness doctor [--project <dir>] [--json]
+  argus-harness catalog [--project <dir>] [--json]
+  argus-harness render [--project <dir>] [--dashboard <id>] [--snapshot <file>] [--out <file>] [--now <iso>]
+  argus-harness audit [--project <dir>] [--dashboard <id>] [--snapshot <file>] [--out <file>] [--strict] [--json] [--now <iso>]
+  argus-harness looker [--project <dir>] [--out <dir>]
+  argus-harness bigquery-sql [--project <dir>] [--dashboard <id>]
+  argus-harness version
+
+A source is one of: static-json, http-json, csv, bigquery.
+No credentials are stored in the project. HTTP header values may reference ${"${ENV}"}.
+`;
+
+function parse(argv) {
+  const args = [];
+  const flags = {};
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (!token.startsWith("--")) {
+      args.push(token);
+      continue;
+    }
+    const [name, inline] = token.slice(2).split("=");
+    if (inline !== undefined) {
+      flags[name] = inline;
+      continue;
+    }
+    const next = argv[index + 1];
+    if (next && !next.startsWith("--")) {
+      flags[name] = next;
+      index += 1;
+    } else {
+      flags[name] = true;
+    }
+  }
+  return { args, flags };
+}
+
+async function projectFrom(flags) {
+  if (flags.project === true) throw new Error("--project requires a directory");
+  const root = resolve(flags.project ? String(flags.project) : process.cwd());
+  return loadProject(root);
+}
+
+function flagValue(flags, name) {
+  if (flags[name] === true) throw new Error(`--${name} requires a value`);
+  return flags[name] === undefined ? undefined : String(flags[name]);
+}
+
+function dashboardFrom(project, id) {
+  const key = id ? String(id) : project.defaultDashboard;
+  const dashboard = project.dashboards.get(key);
+  if (!dashboard) throw new Error(`Unknown dashboard "${key}". Available: ${[...project.dashboards.keys()].join(", ")}`);
+  return dashboard;
+}
+
+async function readVersion() {
+  const pkg = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8"));
+  return pkg.version;
+}
+
+async function init(args, flags) {
+  const destination = resolve(args[0] ?? "argus-dashboard");
+  const template = String(flags.template ?? "starter");
+  if (template !== "starter") throw new Error(`Unknown template "${template}". Only "starter" is available.`);
+  const existing = await readdir(destination).catch(() => []);
+  if (existing.length) throw new Error(`Destination is not empty: ${destination}`);
+  await cp(STARTER, destination, { recursive: true });
+  await mkdir(join(destination, ".argus-harness"), { recursive: true });
+  await writeFile(
+    join(destination, ".argus-harness", "START_HERE.md"),
+    `# Start here
+
+This project was created by Argus Harness. It contains a metric catalog, a source,
+a dashboard contract and a measured snapshot.
+
+1. Read \`argus.config.json\`. It lists the metric, source and dashboard folders.
+2. Edit \`metrics/*.json\`. Keep the key, unit, aggregation and null policy stable.
+3. Point \`sources/static.json\` at your snapshot, or add an HTTP, CSV or BigQuery
+   source. No credentials belong in this folder; use environment variables.
+4. Run \`node ${join(ROOT, "bin", "argus-harness.mjs")} doctor --project .\`.
+5. Run \`node ${join(ROOT, "bin", "argus-harness.mjs")} render --project . --out dashboard.html\`.
+6. Run \`node ${join(ROOT, "bin", "argus-harness.mjs")} audit --project . --out evidence.json\`.
+7. Read \`docs/PRIMITIVES.md\` in the harness repository before adding a new metric.
+
+The starter data is fictional. Replace it with your own measured rows.
+`,
+  );
+  process.stdout.write(`Created ${destination}\nNext: cd ${destination} && node ${join(ROOT, "bin", "argus-harness.mjs")} doctor --project .\n`);
+}
+
+async function doctor(flags) {
+  const project = await projectFrom(flags);
+  const checks = [];
+  checks.push(["project", "ok", project.config.id]);
+  checks.push(["metrics", "ok", `${project.metrics.size}`]);
+  checks.push(["sources", "ok", `${project.sources.size}`]);
+  checks.push(["dashboards", "ok", `${project.dashboards.size}`]);
+  checks.push(["pack", "ok", `${project.pack.id}@${project.pack.version}`]);
+  for (const source of project.sources.values()) {
+    if (source.kind === "static-json" || source.kind === "csv") {
+      const file = resolve(project.root, source.config.path);
+      if (!inside(project.root, file)) {
+        checks.push([`source:${source.id}`, "fail", `path escapes the project: ${source.config.path}`]);
+        continue;
+      }
+      try {
+        await readFile(file);
+        checks.push([`source:${source.id}`, "ok", source.config.path]);
+      } catch {
+        checks.push([`source:${source.id}`, "fail", `missing ${source.config.path}`]);
+      }
+    } else if (source.kind === "http-json") {
+      checks.push([`source:${source.id}`, "info", `${source.config.method} ${new URL(source.config.url).host}`]);
+    } else {
+      checks.push([`source:${source.id}`, "info", `${source.config.project}.${source.config.dataset}.${source.config.table}`]);
+    }
+  }
+  const failed = checks.filter(([, level]) => level === "fail").length;
+  if (flags.json) {
+    process.stdout.write(JSON.stringify({ project: project.config.id, checks, failed }, null, 2) + "\n");
+  } else {
+    for (const [name, level, detail] of checks) process.stdout.write(`${level.padEnd(4)} ${name.padEnd(24)} ${detail}\n`);
+  }
+  process.exitCode = failed ? 1 : 0;
+}
+
+async function catalog(flags) {
+  const project = await projectFrom(flags);
+  const rows = [...project.metrics.values()].sort((a, b) => a.key.localeCompare(b.key));
+  if (flags.json) {
+    process.stdout.write(JSON.stringify(rows, null, 2) + "\n");
+    return;
+  }
+  for (const metric of rows) {
+    const target = metric.target?.label ?? (metric.target ? formatMetric(metric.target.value, metric.unit, metric.format) : "—");
+    process.stdout.write(`${metric.key.padEnd(34)} ${metric.unit.padEnd(13)} ${metric.aggregation.padEnd(11)} ${metric.nullPolicy.padEnd(12)} ${target.padEnd(20)} ${metric.label}\n`);
+  }
+}
+
+function auditNow(flags) {
+  if (!flags.now) return new Date();
+  const value = new Date(String(flags.now));
+  if (!Number.isFinite(value.getTime())) throw new Error("--now must be an ISO timestamp");
+  return value;
+}
+
+async function render(flags) {
+  const project = await projectFrom(flags);
+  const dashboard = dashboardFrom(project, flags.dashboard);
+  const snapshot = await loadSnapshot({
+    project,
+    dashboard,
+    snapshotFile: flagValue(flags, "snapshot"),
+    now: auditNow(flags),
+  });
+  const html = renderDashboardPage({
+    dashboard,
+    catalog: project.metrics,
+    snapshot,
+    pack: project.pack,
+    projectName: project.config.name,
+    noindex: true,
+  });
+  if (flags.out) {
+    const out = resolve(flagValue(flags, "out"));
+    await mkdir(dirname(out), { recursive: true });
+    await writeFile(out, html);
+    process.stdout.write(`Rendered ${dashboard.id} → ${out}\n`);
+  } else {
+    process.stdout.write(html);
+  }
+}
+
+async function audit(flags) {
+  const project = await projectFrom(flags);
+  const dashboard = dashboardFrom(project, flags.dashboard);
+  const source = project.sources.get(dashboard.source);
+  const now = auditNow(flags);
+  const snapshot = await loadSnapshot({
+    project,
+    dashboard,
+    snapshotFile: flagValue(flags, "snapshot"),
+    now,
+  });
+  const evidence = auditDashboard({ dashboard, catalog: project.metrics, source, snapshot, now });
+  if (flags.json) process.stdout.write(JSON.stringify(evidence, null, 2) + "\n");
+  else {
+    for (const check of evidence.checks) {
+      process.stdout.write(`${check.level.toUpperCase().padEnd(5)} ${check.id.padEnd(22)} ${check.title}\n      ${check.detail}\n`);
+    }
+    process.stdout.write(`\n${evidence.summary.pass} pass · ${evidence.summary.warn} warn · ${evidence.summary.fail} fail\n`);
+  }
+  if (flags.out) {
+    const out = resolve(flagValue(flags, "out"));
+    await writeJson(out, evidence);
+    process.stdout.write(`Evidence → ${out}\n`);
+  }
+  process.exitCode = evidenceExitCode(evidence, Boolean(flags.strict));
+}
+
+async function looker(flags) {
+  const project = await projectFrom(flags);
+  const out = resolve(flagValue(flags, "out") ?? "output/looker");
+  await mkdir(out, { recursive: true });
+  await writeFile(join(out, "bigquery.sql"), bigQueryDdl(project.metrics));
+  await writeFile(join(out, "looker-fields.csv"), lookerFieldsCsv(project.metrics));
+  await writeJson(join(out, "looker-fields.json"), lookerFields(project.metrics));
+  await writeFile(join(out, "README.md"), lookerReadme(project.config.name));
+  process.stdout.write(`Wrote ${out}/bigquery.sql, looker-fields.csv, looker-fields.json, README.md\n`);
+}
+
+async function bigquerySql(flags) {
+  const project = await projectFrom(flags);
+  const dashboard = dashboardFrom(project, flags.dashboard);
+  const source = project.sources.get(dashboard.source);
+  if (source.kind !== "bigquery") throw new Error(`Dashboard "${dashboard.id}" uses "${source.kind}", not bigquery`);
+  const today = new Date().toISOString().slice(0, 10);
+  const window = trailingWindow(today, dashboard.window.days);
+  process.stdout.write(buildBigQuerySql(source, window));
+}
+
+export async function runCli(argv = process.argv.slice(2)) {
+  const { args, flags } = parse(argv);
+  const command = args.shift() ?? "help";
+  try {
+    if (command === "help" || flags.help) {
+      process.stdout.write(HELP);
+      return;
+    }
+    if (command === "version" || flags.version) {
+      process.stdout.write(`${await readVersion()}\n`);
+      return;
+    }
+    if (command === "init") return await init(args, flags);
+    if (command === "doctor") return await doctor(flags);
+    if (command === "catalog") return await catalog(flags);
+    if (command === "render") return await render(flags);
+    if (command === "audit") return await audit(flags);
+    if (command === "looker") return await looker(flags);
+    if (command === "bigquery-sql") return await bigquerySql(flags);
+    throw new Error(`Unknown command "${command}". Run argus-harness help.`);
+  } catch (error) {
+    if (process.env.DEBUG) throw error;
+    process.stderr.write(`argus-harness: ${error.message}\n`);
+    process.exitCode = 1;
+  }
+}

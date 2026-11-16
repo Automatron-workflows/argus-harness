@@ -1,0 +1,16 @@
+{
+  "schema": "argus.metric/1",
+  "key": "retention_30d",
+  "label": "30-day retention",
+  "description": "Accounts still active 30 days after their first report. Cohorts without a completed 30-day window are excluded.",
+  "unit": "percent",
+  "direction": "up",
+  "aggregation": "latest",
+  "nullPolicy": "gap",
+  "owner": "Product",
+  "version": 1,
+  "target": {
+    "value": 0.6,
+    "label": "60% retention"
+  }
+}

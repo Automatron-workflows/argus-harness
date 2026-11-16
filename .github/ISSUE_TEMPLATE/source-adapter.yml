@@ -1,0 +1,38 @@
+name: Source adapter
+description: Propose or contribute a warehouse or API adapter
+title: "[adapter] "
+labels: ["adapter"]
+body:
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      placeholder: "Postgres, DuckDB, Snowflake, a product API"
+    validations:
+      required: true
+  - type: textarea
+    id: rows
+    attributes:
+      label: Row shape
+      description: How the source returns metric_key, metric_date, value, source and computed_at.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure behavior
+      description: What happens on timeout, empty rows, an invalid row and a missing credential.
+    validations:
+      required: true
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Rules
+      options:
+        - label: No credentials in the project or test fixtures
+          required: true
+        - label: A failed read returns unavailable, not zero
+          required: true
+        - label: A test covers the failure path
+          required: true

@@ -1,0 +1,12 @@
+{
+  "schema": "argus.metric/1",
+  "key": "click_through_rate",
+  "label": "Search click-through rate",
+  "description": "Search clicks divided by search impressions for the same saved daily rows. This is not a customer conversion rate.",
+  "unit": "percent",
+  "direction": "up",
+  "aggregation": "average",
+  "nullPolicy": "gap",
+  "owner": "Growth",
+  "version": 1
+}

@@ -1,0 +1,180 @@
+{
+  "schema": "argus.dashboard/1",
+  "id": "growth",
+  "title": "Owner growth",
+  "description": "Acquisition, product output and search reach for Harbour. Each number keeps its unit, source and missing-data policy.",
+  "source": "starter-static",
+  "window": {
+    "days": 60
+  },
+  "kpis": [
+    {
+      "metric": "mrr_eur",
+      "label": "Monthly recurring revenue",
+      "help": "Invoice-backed recurring revenue. Not an annualised estimate.",
+      "accent": "teal"
+    },
+    {
+      "metric": "active_accounts",
+      "label": "Active accounts",
+      "help": "Signed in, created a report or recorded activity in the last 30 days.",
+      "accent": "violet"
+    },
+    {
+      "metric": "new_accounts_30d",
+      "label": "New accounts · 30d",
+      "help": "A rolling count, not today's signups.",
+      "accent": "amber"
+    },
+    {
+      "metric": "trial_to_paid_rate_30d",
+      "label": "Trial to paid · 30d",
+      "help": "Mature trials only. Recent cohorts are excluded.",
+      "accent": "mint"
+    }
+  ],
+  "sections": [
+    {
+      "id": "acquisition",
+      "eyebrow": "01",
+      "title": "Acquisition",
+      "caption": "A rolling 30-day count and an active base. These populations are not the same as signups or paying customers.",
+      "layout": "grid",
+      "panels": [
+        {
+          "kind": "chart",
+          "title": "Active accounts",
+          "subtitle": "Measured daily snapshots.",
+          "series": [
+            {
+              "metric": "active_accounts",
+              "label": "Active · 30d",
+              "color": "teal"
+            }
+          ],
+          "chartType": "area"
+        },
+        {
+          "kind": "chart",
+          "title": "New accounts · 30d",
+          "subtitle": "A rolling count; missing dates stay blank.",
+          "series": [
+            {
+              "metric": "new_accounts_30d",
+              "label": "New accounts",
+              "color": "violet"
+            }
+          ],
+          "chartType": "area"
+        },
+        {
+          "kind": "bars",
+          "title": "Plan mix",
+          "subtitle": "Current paid accounts by plan.",
+          "items": [
+            {
+              "label": "Starter",
+              "value": 41,
+              "total": 287,
+              "color": "amber"
+            },
+            {
+              "label": "Pro",
+              "value": 182,
+              "total": 287,
+              "color": "teal"
+            },
+            {
+              "label": "Team",
+              "value": 64,
+              "total": 287,
+              "color": "violet"
+            }
+          ],
+          "note": "Plan mix is a fixed workshop value, not a measured metric in this starter."
+        }
+      ]
+    },
+    {
+      "id": "product",
+      "eyebrow": "02",
+      "title": "Product output",
+      "caption": "Completed reports and the operational measures around them. Reports are not customers.",
+      "layout": "split",
+      "panels": [
+        {
+          "kind": "chart",
+          "title": "Reports generated",
+          "subtitle": "Cumulative completed reports. A counter may step down only after a reset or correction.",
+          "series": [
+            {
+              "metric": "reports_generated_total",
+              "label": "Reports",
+              "color": "teal"
+            }
+          ],
+          "chartType": "area"
+        },
+        {
+          "kind": "rows",
+          "title": "This month",
+          "items": [
+            {
+              "label": "Reports · 30d",
+              "value": "62"
+            },
+            {
+              "label": "First response",
+              "value": "3.4 hours"
+            },
+            {
+              "label": "30-day retention",
+              "value": "61.2%"
+            },
+            {
+              "label": "Plan mix · paid accounts",
+              "value": "287"
+            }
+          ],
+          "note": "The rows are a compact readout; the metric catalog remains the definition."
+        }
+      ]
+    },
+    {
+      "id": "search",
+      "eyebrow": "03",
+      "title": "Search reach",
+      "caption": "Impressions and clicks are search totals. They are not visitors, accounts or attributed customers.",
+      "layout": "equal",
+      "panels": [
+        {
+          "kind": "chart",
+          "title": "Search impressions",
+          "subtitle": "Daily saved totals.",
+          "series": [
+            {
+              "metric": "search_impressions",
+              "label": "Impressions",
+              "color": "teal"
+            }
+          ],
+          "chartType": "area"
+        },
+        {
+          "kind": "chart",
+          "title": "Click-through rate",
+          "subtitle": "Clicks divided by impressions for the same day.",
+          "series": [
+            {
+              "metric": "click_through_rate",
+              "label": "CTR",
+              "color": "violet"
+            }
+          ],
+          "chartType": "line"
+        }
+      ]
+    }
+  ],
+  "note": "Starter data is fictional. Replace the snapshot with measured rows and keep the definitions in metrics/*.json."
+}

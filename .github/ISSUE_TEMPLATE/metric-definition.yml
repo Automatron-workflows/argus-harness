@@ -1,0 +1,31 @@
+name: Metric definition
+description: A definition, unit, window or null-policy problem
+title: "[metric] "
+labels: ["metric"]
+body:
+  - type: input
+    id: key
+    attributes:
+      label: Metric key
+      placeholder: "trial_to_paid_rate_30d"
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current definition
+      description: Unit, aggregation, null policy, window, owner and version.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is ambiguous or wrong
+      description: Two dashboards, a denominator, a zero baseline, a missing day, a reset.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed change
+      description: Include the migration effect on existing snapshots and Looker fields.

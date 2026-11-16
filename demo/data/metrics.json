@@ -1,0 +1,161 @@
+[
+  {
+    "schema": "argus.metric/1",
+    "key": "active_accounts",
+    "label": "Active accounts",
+    "description": "Accounts with a sign-in, report or other recorded activity in the trailing 30 days.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Product",
+    "version": 1,
+    "target": {
+      "value": 400,
+      "label": "400 active accounts"
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "click_through_rate",
+    "label": "Search click-through rate",
+    "description": "Search clicks divided by search impressions for the same saved daily rows. This is not a customer conversion rate.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "average",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "version": 1
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "first_response_hours",
+    "label": "First response",
+    "description": "Median hours from a support request to the first human response. Lower is better.",
+    "unit": "hours",
+    "direction": "down",
+    "aggregation": "average",
+    "nullPolicy": "gap",
+    "owner": "Support",
+    "version": 1,
+    "target": {
+      "value": 4,
+      "label": "Under 4 hours"
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "mrr_eur",
+    "label": "Monthly recurring revenue",
+    "description": "Invoice-backed recurring revenue for active paid subscriptions. The latest measured row, not an annualised estimate.",
+    "unit": "currency_eur",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Finance",
+    "version": 1,
+    "target": {
+      "value": 25000,
+      "label": "€25k monthly target"
+    },
+    "format": {
+      "decimals": 0
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "new_accounts_30d",
+    "label": "New accounts · 30d",
+    "description": "Accounts created in the trailing 30 calendar days. This is a rolling count, not a daily signup count.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "version": 1,
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "reports_generated_30d",
+    "label": "Reports · 30d",
+    "description": "Completed reports in the trailing 30 calendar days. Deliberately sparse in the starter snapshot to demonstrate a real gap.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Product",
+    "version": 1,
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "reports_generated_total",
+    "label": "Reports generated",
+    "description": "Cumulative completed reports. A counter may step down only after an explicit reset or correction.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "cumulative",
+    "nullPolicy": "gap",
+    "owner": "Product",
+    "version": 1,
+    "target": {
+      "value": 1500,
+      "label": "1,500 reports"
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "retention_30d",
+    "label": "30-day retention",
+    "description": "Accounts still active 30 days after their first report. Cohorts without a completed 30-day window are excluded.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "latest",
+    "nullPolicy": "gap",
+    "owner": "Product",
+    "version": 1,
+    "target": {
+      "value": 0.6,
+      "label": "60% retention"
+    }
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "search_impressions",
+    "label": "Search impressions",
+    "description": "Daily Google Search Console impressions for the property. Impressions are not visitors, accounts or customers.",
+    "unit": "count",
+    "direction": "up",
+    "aggregation": "sum",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "version": 1
+  },
+  {
+    "schema": "argus.metric/1",
+    "key": "trial_to_paid_rate_30d",
+    "label": "Trial to paid · 30d",
+    "description": "Mature trials that converted to a paid subscription within 30 days. Trials without a completed outcome window are excluded.",
+    "unit": "percent",
+    "direction": "up",
+    "aggregation": "rolling",
+    "nullPolicy": "gap",
+    "owner": "Growth",
+    "version": 1,
+    "target": {
+      "value": 0.35,
+      "label": "35% conversion"
+    },
+    "window": {
+      "kind": "trailing",
+      "days": 30
+    }
+  }
+]

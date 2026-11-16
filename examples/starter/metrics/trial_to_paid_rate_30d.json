@@ -1,0 +1,20 @@
+{
+  "schema": "argus.metric/1",
+  "key": "trial_to_paid_rate_30d",
+  "label": "Trial to paid · 30d",
+  "description": "Mature trials that converted to a paid subscription within 30 days. Trials without a completed outcome window are excluded.",
+  "unit": "percent",
+  "direction": "up",
+  "aggregation": "rolling",
+  "nullPolicy": "gap",
+  "owner": "Growth",
+  "version": 1,
+  "target": {
+    "value": 0.35,
+    "label": "35% conversion"
+  },
+  "window": {
+    "kind": "trailing",
+    "days": 30
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "@automatron/argus-harness",
+  "version": "0.1.0",
+  "description": "A small dashboard harness that keeps metric definitions, freshness and missing data visible across BigQuery, HTTP, CSV and static sources.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "bin": {
+    "argus-harness": "./bin/argus-harness.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./schema": "./src/schema.mjs",
+    "./sources": "./src/sources.mjs",
+    "./render": "./src/render.mjs",
+    "./audit": "./src/audit.mjs",
+    "./looker": "./src/looker.mjs",
+    "./bigquery": "./src/bigquery.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "packs",
+    "examples",
+    "docs",
+    "demo",
+    "scripts",
+    "README.md",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Automatron-workflows/argus-harness.git"
+  },
+  "homepage": "https://automatron-workflows.github.io/argus-harness/",
+  "bugs": {
+    "url": "https://github.com/Automatron-workflows/argus-harness/issues"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node scripts/check.mjs",
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build-demo.mjs",
+    "generate:data": "node scripts/generate-demo-data.mjs",
+    "audit:starter": "node bin/argus-harness.mjs audit --project examples/starter",
+    "render:starter": "node bin/argus-harness.mjs render --project examples/starter --out output/starter.html",
+    "looker:starter": "node bin/argus-harness.mjs looker --project examples/starter --out output/looker"
+  },
+  "keywords": [
+    "analytics",
+    "dashboard",
+    "metrics",
+    "bigquery",
+    "looker-studio",
+    "data-contracts",
+    "automatron"
+  ]
+}

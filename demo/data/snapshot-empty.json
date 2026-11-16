@@ -1,0 +1,79 @@
+{
+  "schema": "argus.snapshot/1",
+  "source": "starter-static",
+  "asOf": "2026-11-15T06:00:00.000Z",
+  "window": {
+    "start": "2026-09-17",
+    "end": "2026-11-15",
+    "days": 60
+  },
+  "status": {
+    "state": "unavailable",
+    "label": "Source unavailable",
+    "detail": "The source returned no measured rows. Nothing has been replaced with zeroes.",
+    "coverage": "0 measured rows",
+    "computedAt": "2026-11-15T06:00:00.000Z"
+  },
+  "metrics": {
+    "mrr_eur": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "active_accounts": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "new_accounts_30d": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "trial_to_paid_rate_30d": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "reports_generated_total": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "reports_generated_30d": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "search_impressions": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "click_through_rate": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "first_response_hours": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    },
+    "retention_30d": {
+      "value": null,
+      "date": null,
+      "history": [],
+      "source": "harbour-demo"
+    }
+  }
+}

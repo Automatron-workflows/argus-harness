@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Argus Harness is a small dashboard harness that keeps metric definitions, freshness and missing data visible across BigQuery, HTTP, CSV and static sources.">
+<meta property="og:title" content="Argus Harness — metrics you can defend">
+<meta property="og:description" content="One metric layer. Several sources. Dashboards that do not turn a missing day into zero.">
+<meta property="og:type" content="website">
+<title>Argus Harness — metrics you can defend</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="demo-top">
+  <div class="demo-shell demo-topbar">
+    <a class="demo-brand" href="./">
+      <span class="demo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12.35a1 1 0 0 1 0-.7C3.45 7.44 7.29 4 12 4s8.55 3.44 9.94 7.65a1 1 0 0 1 0 .7C20.55 16.56 16.71 20 12 20s-8.55-3.44-9.94-7.65"/><circle cx="12" cy="12" r="3"/></svg>
+      </span>
+      <span><strong>Argus Harness</strong><small>Metric harness · Automatron</small></span>
+    </a>
+    <a class="demo-github" href="https://github.com/Automatron-workflows/argus-harness">Source on GitHub ↗</a>
+  </div>
+</header>
+
+<main class="demo-shell">
+  <section class="demo-intro">
+    <p class="demo-eyebrow">Metric harness</p>
+    <h1>Metrics you can defend.</h1>
+    <p class="demo-lede">One metric layer. Several sources. Dashboards that keep definitions, freshness and missing data visible instead of turning a missing day into zero.</p>
+    <div class="demo-actions">
+      <button type="button" class="demo-button" id="copy-init">Copy setup command</button>
+      <a class="demo-button demo-button-ghost" href="#dashboard-stage">Try the dashboard</a>
+    </div>
+    <p class="demo-fine">Extracted from Argus, the internal analytics dashboard at Upswitch. The demo uses fictional Harbour data. No real customers, revenue or search results.</p>
+  </section>
+
+  <div class="demo-tabs" role="tablist" aria-label="Harness workshop">
+    <button type="button" class="demo-tab" role="tab" id="tab-dashboard" aria-controls="panel-dashboard" aria-selected="true" tabindex="0">Dashboard</button>
+    <button type="button" class="demo-tab" role="tab" id="tab-contract" aria-controls="panel-contract" aria-selected="false" tabindex="-1">Contract</button>
+    <button type="button" class="demo-tab" role="tab" id="tab-sources" aria-controls="panel-sources" aria-selected="false" tabindex="-1">Sources</button>
+    <button type="button" class="demo-tab" role="tab" id="tab-looker" aria-controls="panel-looker" aria-selected="false" tabindex="-1">Looker Studio</button>
+    <button type="button" class="demo-tab" role="tab" id="tab-audit" aria-controls="panel-audit" aria-selected="false" tabindex="-1">Audit</button>
+  </div>
+
+  <section class="demo-panel" id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard" tabindex="0">
+    <div class="demo-panel-head">
+      <div>
+        <h2>One dashboard. Three source states.</h2>
+        <p>Switch the snapshot. The contracts do not change; the labels, gaps and audit findings do.</p>
+      </div>
+      <div class="demo-state" role="group" aria-label="Snapshot state">
+        <button type="button" class="demo-state-button is-active" data-state="healthy" aria-pressed="true">Live</button>
+        <button type="button" class="demo-state-button" data-state="stale" aria-pressed="false">Stale</button>
+        <button type="button" class="demo-state-button" data-state="empty" aria-pressed="false">Unavailable</button>
+      </div>
+    </div>
+    <div class="demo-stage" id="dashboard-stage"></div>
+  </section>
+
+  <section class="demo-panel" id="panel-contract" role="tabpanel" aria-labelledby="tab-contract" tabindex="0" hidden>
+    <div class="demo-panel-head">
+      <div>
+        <h2>The primitives that are locked.</h2>
+        <p>A metric is not a column name. It carries a unit, direction, aggregation, null policy, owner and version.</p>
+      </div>
+    </div>
+    <div class="demo-callout">
+      <strong>Why the unit and null policy matter.</strong>
+      <p>A percent is stored as a fraction, not 34.38. A cumulative counter may only step down after an explicit reset. A missing date is a gap; the renderer leaves it blank. These rules are checked before a dashboard reaches a reader.</p>
+    </div>
+    <div class="demo-table-wrap">
+      <table class="demo-table" id="metric-table"><caption class="demo-sr">Metric catalog</caption></table>
+    </div>
+    <details class="demo-json">
+      <summary>View the dashboard contract</summary>
+      <pre id="dashboard-json"></pre>
+    </details>
+  </section>
+
+  <section class="demo-panel" id="panel-sources" role="tabpanel" aria-labelledby="tab-sources" tabindex="0" hidden>
+    <div class="demo-panel-head">
+      <div>
+        <h2>The same contract, whatever the source.</h2>
+        <p>Static JSON for a preserved snapshot, HTTP for a product API, CSV for an export, BigQuery for the warehouse.</p>
+      </div>
+    </div>
+    <div class="demo-source-grid" id="source-grid"></div>
+    <div class="demo-callout">
+      <strong>Looker Studio is a peer, not an enemy.</strong>
+      <p>Generate the same catalog as BigQuery tables and views. Looker Studio can read those views for exploration while the harness renders the code-owned dashboard. Both use the same metric keys, units and null policy.</p>
+    </div>
+  </section>
+
+  <section class="demo-panel" id="panel-looker" role="tabpanel" aria-labelledby="tab-looker" tabindex="0" hidden>
+    <div class="demo-panel-head">
+      <div>
+        <h2>Share the semantic layer with Looker Studio.</h2>
+        <p>The harness writes BigQuery DDL, views and a field map. It does not call the Looker Studio API or manage credentials.</p>
+      </div>
+      <div class="demo-downloads">
+        <button type="button" class="demo-button demo-button-ghost" id="download-sql">Download SQL</button>
+        <button type="button" class="demo-button demo-button-ghost" id="download-fields">Download field map</button>
+      </div>
+    </div>
+    <div class="demo-split">
+      <section class="demo-card">
+        <h3>BigQuery view</h3>
+        <p><code>v_metric_daily</code> joins measured rows to the catalog. <code>v_metric_latest</code> applies one latest-row rule. <code>v_metric_health</code> exposes freshness and source status.</p>
+        <pre class="demo-code" id="bigquery-sql"></pre>
+      </section>
+      <section class="demo-card">
+        <h3>Looker Studio field map</h3>
+        <p>Labels, units, directions and descriptions come from the same catalog. The field map is a mapping, not a connector.</p>
+        <div class="demo-table-wrap demo-table-compact">
+          <table class="demo-table" id="looker-table"><caption class="demo-sr">Looker Studio field map</caption></table>
+        </div>
+      </section>
+    </div>
+    <div class="demo-callout demo-callout-warn">
+      <strong>What is not guaranteed.</strong>
+      <p>Looker Studio blends, calculated fields and report-level aggregation can change a metric's meaning. Review them against the catalog. A rendered report is not evidence that its source rows are fresh or complete.</p>
+    </div>
+  </section>
+
+  <section class="demo-panel" id="panel-audit" role="tabpanel" aria-labelledby="tab-audit" tabindex="0" hidden>
+    <div class="demo-panel-head">
+      <div>
+        <h2>Audit the dashboard, not the screenshot.</h2>
+        <p>Checks cover source agreement, freshness, missing metrics, gaps, cumulative resets, units, chart thickness and definitions.</p>
+      </div>
+      <button type="button" class="demo-button demo-button-ghost" id="download-evidence">Download evidence</button>
+    </div>
+    <div class="demo-audit-summary" id="audit-summary"></div>
+    <div class="demo-checks" id="audit-checks"></div>
+  </section>
+
+  <section class="demo-try" id="try">
+    <p class="demo-eyebrow">Run it</p>
+    <h2>Start with one measured dashboard.</h2>
+    <p>Clone the harness, create a project, replace the fictional snapshot, then run the audit before you publish.</p>
+    <pre class="demo-code">git clone https://github.com/Automatron-workflows/argus-harness.git
+node argus-harness/bin/argus-harness.mjs init ./my-dashboard
+cd my-dashboard
+node ../argus-harness/bin/argus-harness.mjs doctor --project .
+node ../argus-harness/bin/argus-harness.mjs render --project . --out dashboard.html
+node ../argus-harness/bin/argus-harness.mjs audit --project . --out evidence.json</pre>
+    <p class="demo-fine">Node 20 or newer. No npm dependencies, model calls or telemetry. The starter data is fictional. MIT licensed.</p>
+  </section>
+</main>
+
+<footer class="demo-footer">
+  <span>Argus Harness · Automatron</span>
+  <span>Definitions first. Missing data stays missing. <a href="https://github.com/Automatron-workflows/argus-harness">Source</a></span>
+</footer>
+
+<script type="module" src="./app.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "schema": "argus.metric/1",
+  "key": "search_impressions",
+  "label": "Search impressions",
+  "description": "Daily Google Search Console impressions for the property. Impressions are not visitors, accounts or customers.",
+  "unit": "count",
+  "direction": "up",
+  "aggregation": "sum",
+  "nullPolicy": "gap",
+  "owner": "Growth",
+  "version": 1
+}
