@@ -9,7 +9,7 @@ npm test
 npm run check
 ```
 
-- **20 Node tests** pass: calendar validity, metric/dashboard/snapshot
+- **21 Node tests** pass: calendar validity, metric/dashboard/snapshot
   validation, series gaps, nice ticks, growth rate suppression, formatting,
   healthy/stale/empty audits, renderer escaping and unavailable values, CSV
   parsing, row-to-snapshot normalization, HTTP success/failure, BigQuery SQL

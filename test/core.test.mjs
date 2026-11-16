@@ -4,10 +4,11 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { auditDashboard } from "../src/audit.mjs";
 import { addDays, isValidDay, normalizeDay, trailingWindow } from "../src/calendar.mjs";
+import { sha256Hex } from "../src/digest.mjs";
 import { formatMetric } from "../src/format.mjs";
 import { loadProject, dashboardMetrics } from "../src/project.mjs";
 import { renderDashboard } from "../src/render.mjs";
-import { validateDashboard, validateMetric, validateSnapshot, HarnessError } from "../src/schema.mjs";
+import { validateDashboard, validateEvidence, validateMetric, validateSnapshot, HarnessError } from "../src/schema.mjs";
 import { growthRates, niceTicks, normalizeHistory, segments } from "../src/series.mjs";
 import { loadSnapshot } from "../src/sources.mjs";
 
@@ -99,6 +100,16 @@ test("the healthy starter dashboard passes the audit with only explicit gap warn
   assert.ok(evidence.summary.warn >= 1);
   assert.ok(evidence.checks.some((check) => check.id === "gaps" && check.level === "warn"));
   assert.equal(evidence.schema, "argus.evidence/1");
+  assert.match(evidence.contract.metricCatalog, /^[0-9a-f]{64}$/);
+  assert.match(evidence.contract.dashboard, /^[0-9a-f]{64}$/);
+  assert.match(evidence.contract.snapshot, /^[0-9a-f]{64}$/);
+  const validated = validateEvidence(evidence);
+  assert.equal(validated.contract.metricCatalog, evidence.contract.metricCatalog);
+});
+
+test("SHA-256 fingerprints match the standard vectors", () => {
+  assert.equal(sha256Hex(""), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+  assert.equal(sha256Hex("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 });
 
 test("a stale or empty snapshot fails the audit", async () => {

@@ -512,6 +512,16 @@ export function validateEvidence(input, path = "evidence") {
   });
   const counts = { pass: 0, warn: 0, fail: 0, info: 0 };
   for (const check of checks) counts[check.level] += 1;
+  const contract = evidence.contract
+    ? (() => {
+        const raw = object(evidence.contract, `${path}.contract`);
+        return Object.freeze({
+          metricCatalog: string(raw.metricCatalog, `${path}.contract.metricCatalog`, { max: 64, pattern: /^[0-9a-f]{64}$/ }),
+          dashboard: string(raw.dashboard, `${path}.contract.dashboard`, { max: 64, pattern: /^[0-9a-f]{64}$/ }),
+          snapshot: string(raw.snapshot, `${path}.contract.snapshot`, { max: 64, pattern: /^[0-9a-f]{64}$/ }),
+        });
+      })()
+    : undefined;
   return Object.freeze({
     schema: "argus.evidence/1",
     dashboard: string(evidence.dashboard, `${path}.dashboard`, { max: 64 }),
@@ -519,6 +529,7 @@ export function validateEvidence(input, path = "evidence") {
     capturedAt: string(evidence.capturedAt, `${path}.capturedAt`, { max: 80 }),
     checks: Object.freeze(checks),
     summary: Object.freeze(counts),
+    ...(contract ? { contract } : {}),
     ...(optionalString(evidence.pack, `${path}.pack`, { max: 80 }) ? { pack: evidence.pack } : {}),
   });
 }

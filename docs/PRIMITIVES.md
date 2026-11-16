@@ -96,7 +96,8 @@ render a 30-day source.
 
 `auditDashboard` writes `argus.evidence/1`. Each check is `pass`, `warn`, `fail`
 or `info`, with a title and a consequence. Fails exit non-zero; `--strict` also
-fails on warnings.
+fails on warnings. The evidence also carries SHA-256 fingerprints of the metric
+catalog, dashboard and snapshot, so a contract change is visible in the record.
 
 The audit is deliberately conservative:
 

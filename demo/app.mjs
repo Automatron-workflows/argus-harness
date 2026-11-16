@@ -84,7 +84,7 @@ function renderAudit() {
   const evidence = state.evidence;
   $("#audit-summary").innerHTML = ["pass", "warn", "fail"]
     .map((level) => `<span class="demo-audit-count" data-level="${level}">${evidence.summary[level]} ${level}</span>`)
-    .join("") + `<span class="demo-audit-count">Audit time · 15 Nov 2026 · 12:00 UTC</span>`;
+    .join("") + `<span class="demo-audit-count">Audit time · 15 Nov 2026 · 12:00 UTC</span>` + `<span class="demo-audit-count">Catalog ${escape(evidence.contract?.metricCatalog?.slice(0, 12) ?? "—")}</span>`;
   $("#audit-checks").innerHTML = evidence.checks
     .map((check) => `<article class="demo-check" data-level="${escape(check.level)}"><span class="demo-check-level">${escape(check.level)}</span><div><h3>${escape(check.title)}</h3><p>${escape(check.detail)}</p></div></article>`)
     .join("");

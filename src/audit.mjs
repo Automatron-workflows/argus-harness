@@ -1,5 +1,7 @@
 import { daysBetween, normalizeDay, parseDay } from "./calendar.mjs";
+import { sha256Hex } from "./digest.mjs";
 import { formatMetric } from "./format.mjs";
+import { canonicalJson } from "./schema.mjs";
 import { isMonotonic, missingDays, normalizeHistory, observedDays } from "./series.mjs";
 
 function check(id, level, title, detail, metrics) {
@@ -296,6 +298,11 @@ export function auditDashboard({ dashboard, catalog, source, snapshot, now = new
     capturedAt: now.toISOString(),
     checks,
     summary,
+    contract: {
+      metricCatalog: sha256Hex(canonicalJson([...catalog.values()].sort((a, b) => a.key.localeCompare(b.key)))),
+      dashboard: sha256Hex(canonicalJson(dashboard)),
+      snapshot: sha256Hex(canonicalJson(snapshot)),
+    },
     pack: "aurora",
   };
 }

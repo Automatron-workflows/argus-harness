@@ -160,7 +160,12 @@ A missing day is absent from `history`. A null latest value is `value: null`,
       "detail": "6.0 hours old; budget 26 hours."
     }
   ],
-  "summary": { "pass": 14, "warn": 1, "fail": 0, "info": 0 }
+  "summary": { "pass": 14, "warn": 1, "fail": 0, "info": 0 },
+  "contract": {
+    "metricCatalog": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "dashboard": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "snapshot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
 }
 ```
 

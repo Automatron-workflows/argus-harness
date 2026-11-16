@@ -128,6 +128,9 @@ call `snapshotFromRows`.
 
 Gaps are a warning, not a failure. A gap is honest; a filled zero is not.
 
+The evidence also carries SHA-256 fingerprints of the metric catalog, dashboard
+and snapshot, so a contract change is bound to the record.
+
 ## Limits
 
 - The harness is a presentation and contract layer. It does not own
