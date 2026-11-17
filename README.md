@@ -83,7 +83,8 @@ account, npm install, model call or telemetry is required.
 The **Argus reference** in `examples/argus-reference` contains the 35 preserved
 metric definitions with their real units, aggregations, null policies, owners and
 targets. It fetches the public portfolio snapshot at render time; no Upswitch
-rows are stored in this repository.
+rows are stored in this repository. A rendered copy is hosted with the portfolio:
+<https://matthias-mandiau-portfolio.lovable.app/case-studies/upswitch/argus-results/harness.html>.
 
 For the workshop:
 

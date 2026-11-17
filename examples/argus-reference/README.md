@@ -21,5 +21,8 @@ a live dashboard.
 
 No Upswitch rows, credentials, customer identities or private drilldowns are
 stored in this repository. The public snapshot is the same aggregate already
-published with the portfolio case study. Placeholder unit-economics metrics stay
-unavailable rather than becoming zero.
+published with the portfolio case study. A rendered copy is hosted with the
+portfolio:
+<https://matthias-mandiau-portfolio.lovable.app/case-studies/upswitch/argus-results/harness.html>.
+
+Placeholder unit-economics metrics stay unavailable rather than becoming zero.
