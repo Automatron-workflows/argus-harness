@@ -46,7 +46,25 @@ reaches a reader.
 The important details are the primitives, not the pixels. The renderer is one
 consumer; the metric and snapshot contracts are the reusable part.
 
-## Try it in a minute
+## Install the release
+
+Install the pinned `v0.1.0` tarball, or clone the repository for development:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.1.0/automatron-argus-harness-0.1.0.tgz
+
+npx argus-harness init ./my-dashboard
+cd my-dashboard
+npx argus-harness doctor --project .
+npx argus-harness render --project . --out dashboard.html
+npx argus-harness audit --project . --out evidence.json
+```
+
+The package has no runtime dependencies. `npm install` is only needed to place
+the `argus-harness` binary; the CLI itself uses Node's standard library.
+
+## Run it from source
 
 ```sh
 git clone https://github.com/Automatron-workflows/argus-harness.git
@@ -181,6 +199,7 @@ for the current record and its limits.
 | `demo` | The public workshop |
 | `docs/PRIMITIVES.md` | What was locked and why |
 | `docs/ARGUS-AUDIT.md` | The extraction audit from Argus source |
+| `docs/RELEASE.md` | The pinned tarball, checksum and release process |
 
 MIT licensed. Contributions that add a source adapter or a reproducible
 definition failure are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).

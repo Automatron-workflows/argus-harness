@@ -1,0 +1,61 @@
+# Releases
+
+## v0.1.0 · 17 November 2026
+
+Source revision: the commit tagged `v0.1.0`
+Tarball: `automatron-argus-harness-0.1.0.tgz`
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.1.0/automatron-argus-harness-0.1.0.tgz
+```
+
+Then:
+
+```sh
+npx argus-harness init ./my-dashboard
+cd my-dashboard
+npx argus-harness doctor --project .
+npx argus-harness render --project . --out dashboard.html
+npx argus-harness audit --project . --out evidence.json
+```
+
+Verified locally:
+
+- `npm test` — 23 tests pass.
+- `npm run check` — starter audit 14 pass, 1 gap warning, 0 fail.
+- The packed tarball installs into an empty npm project, runs `version`, `init`,
+  `doctor` and `render`, and produces a non-empty dashboard.
+- `argus-harness init` copies the starter project; `doctor` validates it offline.
+- The public workshop is deployed from `main` by the `workshop` workflow.
+
+The tarball contains `bin`, `src`, `packs`, `examples`, `docs`, `demo`, `scripts`,
+the README, the licence and the policy files. It contains no credentials,
+customer rows or private URLs. The Argus reference fetches the public portfolio
+snapshot at render time; no Upswitch rows are stored in the package.
+
+## Release process
+
+1. Run `npm test` and `npm run check`.
+2. Build the published workshop: `npm run build`.
+3. Confirm the source is committed and the working tree is clean.
+4. Create the tarball:
+
+   ```sh
+   mkdir -p output/release
+   npm pack --pack-destination output/release
+   shasum -a 256 output/release/automatron-argus-harness-<version>.tgz
+   ```
+
+5. Test the tarball in a temporary npm project, including `init`, `doctor` and
+   `render`.
+6. Tag the exact source revision and create a GitHub release with the tarball and
+   its checksum. Do not overwrite a published release; bump the version.
+7. Update `docs/RELEASE.md`, `CHANGELOG.md` and the README install URL.
+8. Verify the workshop deployment after the release commit.
+
+The package is `private: true` and is not published to the npm registry. The
+GitHub release tarball is the distribution unit, matching the other Automatron
+harnesses. There is no automatic updater.
