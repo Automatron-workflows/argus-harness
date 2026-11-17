@@ -1,5 +1,25 @@
 # Releases
 
+## v0.2.3 · 17 November 2026
+
+Security/portability patch for warehouse child processes. Source revision: the
+commit tagged `v0.2.3`. Tarball: `automatron-argus-harness-0.2.3.tgz`.
+
+- BigQuery `bq` now receives only an allowlisted Google Cloud environment rather
+  than the full parent environment.
+- Postgres/Redshift receive `DATABASE_URL` and the standard `PG*` names by
+  default.
+- Snowflake receives the standard `SNOWSQL_*` names when present.
+- Added an environment-allowlist test.
+- 33 tests.
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.3/automatron-argus-harness-0.2.3.tgz
+```
+
 ## v0.2.2 · 17 November 2026
 
 Fixes the `fields` command README for non-BigQuery warehouses. Source revision:

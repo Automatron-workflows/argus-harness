@@ -52,6 +52,9 @@ Looker Studio field map without BigQuery-specific SQL.
 ```
 
 - Uses `bq query` and the existing `gcloud` login.
+- Passes only `PATH`, `HOME`, `TMPDIR`, `GOOGLE_APPLICATION_CREDENTIALS`,
+  `GOOGLE_CLOUD_PROJECT`, `CLOUDSDK_CONFIG`, `CLOUDSDK_CORE_PROJECT` and the
+  standard `CLOUDSDK_COMPUTE_*` names to the child process.
 - Long-format table; the adapter generates the query.
 - `config.sql` can replace the generated query with a projection from any
   existing table. Keep the five aliases.
@@ -75,7 +78,8 @@ Looker Studio field map without BigQuery-specific SQL.
 ```
 
 - Uses `snowsql` in CSV mode with `friendly=false` and `timing=false`.
-- The connection profile owns the password; do not put it in the project.
+- The connection profile owns the password; do not put it in the project. The
+  `SNOWSQL_*` environment names are passed when present; other variables are not.
 - If you use the newer `snow` CLI, set `command` and `args` explicitly:
   ```json
   {
@@ -101,11 +105,14 @@ Looker Studio field map without BigQuery-specific SQL.
 ```
 
 - Uses `psql --csv -v ON_ERROR_STOP=1 -c`.
-- `DATABASE_URL` is passed only when listed; other environment variables are not
-  inherited by the child. Use `PGSSLMODE` and the other `PG*` names explicitly
-  if needed.
+- `DATABASE_URL` and the standard `PG*` names (`PGHOST`, `PGPORT`, `PGDATABASE`,
+  `PGUSER`, `PGPASSWORD`, `PGSSLMODE`, and related settings) are passed to the
+  child. Other environment variables are not inherited. Use `connectionEnv` for
+  a different connection variable.
 - Redshift is the same command; set `preset: "redshift"` for the label and keep
   the Redshift endpoint/SSL settings in the connection environment.
+- `psql --csv` requires a modern `psql` (12 or newer). The Redshift ODBC/psql
+  client can be older; install a current client or map the output yourself.
 
 ## DuckDB
 

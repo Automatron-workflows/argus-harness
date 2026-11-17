@@ -139,9 +139,12 @@ The query must return the five canonical aliases.
 ```
 
 `env` is an allowlist; only `PATH`, `HOME`, `TMPDIR` and the named variables
-reach the child. Keep credentials in the provider profile or environment.
-`{{start}}`, `{{end}}` and `{{days}}` are replaced before execution. See
-[Warehouses](WAREHOUSES.md) for each provider and the custom command contract.
+reach the child. Postgres/Redshift also receive the standard `PG*` names and
+`DATABASE_URL`; Snowflake receives `SNOWSQL_*`; the BigQuery kind receives the
+Google Cloud credential/config names. Keep credentials in the provider profile or
+environment. `{{start}}`, `{{end}}` and `{{days}}` are replaced before execution.
+See [Warehouses](WAREHOUSES.md) for each provider and the custom command
+contract.
 
 ## Custom adapter
 

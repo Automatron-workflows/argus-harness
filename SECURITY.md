@@ -17,4 +17,7 @@ Do not open a public issue with a live token. Use GitHub's private vulnerability
 reporting for this repository, or contact the maintainer directly.
 
 The harness is not a security boundary. It does not authenticate a caller,
-authorize a metric, sandbox `bq`, or verify that a source row is true.
+authorize a metric, sandbox a warehouse CLI, or verify that a source row is true.
+It does pass a small allowlisted environment to warehouse child processes rather
+than the full parent environment; review each source's `env` list before adding
+a credential.

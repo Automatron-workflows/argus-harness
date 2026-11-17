@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { buildBigQuerySql } from "../src/bigquery.mjs";
+import { buildBigQuerySql, bqEnv } from "../src/bigquery.mjs";
 import { loadProject } from "../src/project.mjs";
-import { parseRows, runSqlCli, SqlCliUnavailable } from "../src/sql-cli.mjs";
+import { childEnv, parseRows, runSqlCli, SqlCliUnavailable } from "../src/sql-cli.mjs";
 import { validateDashboard, validateMetric, validateSource, HarnessError } from "../src/schema.mjs";
 import { loadSnapshot } from "../src/sources.mjs";
 import { warehouseDdl } from "../src/warehouse-ddl.mjs";
@@ -73,6 +73,52 @@ test("CSV and JSON rows normalize to the canonical shape", () => {
   assert.deepEqual(csv[0], { metric_key: "mrr_eur", metric_date: "2026-11-15", value: "120", source: "billing", computed_at: "2026-11-15T06:00:00Z" });
   const json = parseRows('[{"metric_key":"mrr_eur","metric_date":"2026-11-15","value":120}]', "json");
   assert.equal(json[0].metric_key, "mrr_eur");
+});
+
+test("warehouse child processes receive only the allowlisted environment", () => {
+  const env = {
+    PATH: "/bin",
+    HOME: "/tmp/home",
+    TMPDIR: "/tmp",
+    UNLISTED_SECRET: "no",
+    DATABASE_URL: "postgres://example",
+    PGHOST: "db.example",
+    SNOWSQL_PWD: "secret",
+    GOOGLE_APPLICATION_CREDENTIALS: "/tmp/key.json",
+  };
+  const custom = validateSource({
+    schema: "argus.source/1",
+    id: "custom",
+    label: "Custom",
+    description: "Custom",
+    kind: "sql-cli",
+    config: { preset: "custom", command: "x", sql: "SELECT 1", env: ["ALLOWED"] },
+  });
+  assert.deepEqual(childEnv(custom, { ...env, ALLOWED: "yes" }), { PATH: "/bin", HOME: "/tmp/home", TMPDIR: "/tmp", ALLOWED: "yes" });
+  const pg = validateSource({
+    schema: "argus.source/1",
+    id: "pg",
+    label: "Postgres",
+    description: "Postgres",
+    kind: "sql-cli",
+    config: { preset: "postgres", sql: "SELECT 1" },
+  });
+  const pgEnv = childEnv(pg, env);
+  assert.equal(pgEnv.DATABASE_URL, "postgres://example");
+  assert.equal(pgEnv.PGHOST, "db.example");
+  assert.equal(pgEnv.UNLISTED_SECRET, undefined);
+  const snow = validateSource({
+    schema: "argus.source/1",
+    id: "snow",
+    label: "Snowflake",
+    description: "Snowflake",
+    kind: "sql-cli",
+    config: { preset: "snowflake", sql: "SELECT 1" },
+  });
+  assert.equal(childEnv(snow, env).SNOWSQL_PWD, "secret");
+  const bq = bqEnv(env);
+  assert.equal(bq.GOOGLE_APPLICATION_CREDENTIALS, "/tmp/key.json");
+  assert.equal(bq.UNLISTED_SECRET, undefined);
 });
 
 test("a custom CLI source runs and becomes a snapshot", async () => {

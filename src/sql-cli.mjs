@@ -27,7 +27,34 @@ const PRESETS = {
 function childEnv(source, env) {
   const allowed = new Set(["PATH", "HOME", "TMPDIR", ...(source.config.env ?? [])]);
   if (source.config.preset === "postgres" || source.config.preset === "redshift") {
-    allowed.add(source.config.connectionEnv ?? "DATABASE_URL");
+    for (const name of [
+      "PGHOST",
+      "PGPORT",
+      "PGDATABASE",
+      "PGUSER",
+      "PGPASSWORD",
+      "PGSSLMODE",
+      "PGOPTIONS",
+      "PGCONNECT_TIMEOUT",
+      "PGSERVICE",
+      "PGSERVICEFILE",
+      "PGPASSFILE",
+      "PGAPPNAME",
+    ]) {
+      allowed.add(name);
+    }
+    if (source.config.connectionEnv) allowed.add(source.config.connectionEnv);
+    else allowed.add("DATABASE_URL");
+  }
+  if (source.config.preset === "snowflake") {
+    for (const name of ["SNOWSQL_PWD", "SNOWSQL_USER", "SNOWSQL_ACCOUNT", "SNOWSQL_WAREHOUSE", "SNOWSQL_ROLE", "SNOWSQL_DATABASE", "SNOWSQL_SCHEMA"]) {
+      allowed.add(name);
+    }
+  }
+  if (source.config.preset === "bigquery") {
+    for (const name of ["GOOGLE_APPLICATION_CREDENTIALS", "GOOGLE_CLOUD_PROJECT", "CLOUDSDK_CONFIG", "CLOUDSDK_CORE_PROJECT"]) {
+      allowed.add(name);
+    }
   }
   const result = {};
   for (const name of allowed) {
@@ -209,4 +236,4 @@ export async function runSqlCli({ source, window, env = process.env, projectRoot
   }
 }
 
-export { PRESETS, parseRows };
+export { PRESETS, childEnv, parseRows };

@@ -41,6 +41,25 @@ ORDER BY ${metricColumn}, ${dateColumn}
 `;
 }
 
+export function bqEnv(env = process.env) {
+  const allowed = [
+    "PATH",
+    "HOME",
+    "TMPDIR",
+    "GOOGLE_APPLICATION_CREDENTIALS",
+    "GOOGLE_CLOUD_PROJECT",
+    "CLOUDSDK_CONFIG",
+    "CLOUDSDK_CORE_PROJECT",
+    "CLOUDSDK_COMPUTE_REGION",
+    "CLOUDSDK_COMPUTE_ZONE",
+  ];
+  const result = {};
+  for (const name of allowed) {
+    if (env[name] !== undefined) result[name] = env[name];
+  }
+  return result;
+}
+
 export async function runBigQuery({ source, window, bqBin = process.env.BQ_BIN || "bq", maxBuffer = 64 * 1024 * 1024 }) {
   const sql = buildBigQuerySql(source, window);
   const args = [
@@ -54,7 +73,7 @@ export async function runBigQuery({ source, window, bqBin = process.env.BQ_BIN |
     sql,
   ];
   try {
-    const { stdout } = await run(bqBin, args, { maxBuffer, encoding: "utf8" });
+    const { stdout } = await run(bqBin, args, { maxBuffer, encoding: "utf8", env: bqEnv() });
     const text = stdout.trim();
     if (!text) return [];
     const parsed = JSON.parse(text);

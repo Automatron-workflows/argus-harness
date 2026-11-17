@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.3 · 17 November 2026
+
+- BigQuery child processes use an allowlisted environment.
+- Postgres/Redshift receive `DATABASE_URL` and standard `PG*` names.
+- Snowflake receives standard `SNOWSQL_*` names.
+- Added an environment-allowlist test.
+- 33 tests.
+
 ## 0.2.2 · 17 November 2026
 
 - `fields` writes a provider-neutral Looker Studio field-map guide.

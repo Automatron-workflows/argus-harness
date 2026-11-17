@@ -1,5 +1,11 @@
 # Status
 
+## v0.2.3 · 17 November 2026
+
+- Warehouse child processes use allowlisted environments.
+- BigQuery `bq` no longer inherits the full parent environment.
+- 33 tests.
+
 ## v0.2.2 · 17 November 2026
 
 - Provider-neutral `fields` README.
