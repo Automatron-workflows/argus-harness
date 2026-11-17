@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Argus Harness is a small dashboard harness that keeps metric definitions, freshness and missing data visible across BigQuery, HTTP, CSV and static sources.">
+<meta name="description" content="Argus Harness is a small dashboard harness that keeps metric definitions, freshness and missing data visible across BigQuery, Snowflake, Redshift, Athena, Postgres, DuckDB, HTTP, CSV and static sources.">
 <meta property="og:title" content="Argus Harness — metrics you can defend">
 <meta property="og:description" content="One metric layer. Several sources. Dashboards that do not turn a missing day into zero.">
 <meta property="og:type" content="website">
@@ -143,13 +143,14 @@
   <section class="demo-try" id="try">
     <p class="demo-eyebrow">Run it</p>
     <h2>Start with one measured dashboard.</h2>
-    <p>Clone the harness, create a project, replace the fictional snapshot, then run the audit before you publish.</p>
+    <p>Clone the harness, create a warehouse project, replace the fictional snapshot, then run the audit before you publish.</p>
     <pre class="demo-code">git clone https://github.com/Automatron-workflows/argus-harness.git
-node argus-harness/bin/argus-harness.mjs init ./my-dashboard
-cd my-dashboard
+node argus-harness/bin/argus-harness.mjs init ./my-warehouse --template warehouse
+cd my-warehouse
 node ../argus-harness/bin/argus-harness.mjs doctor --project .
-node ../argus-harness/bin/argus-harness.mjs render --project . --out dashboard.html
-node ../argus-harness/bin/argus-harness.mjs audit --project . --out evidence.json</pre>
+node ../argus-harness/bin/argus-harness.mjs audit --project . --source custom-local
+node ../argus-harness/bin/argus-harness.mjs render --project . --source bigquery --out dashboard.html
+node ../argus-harness/bin/argus-harness.mjs audit --project . --source bigquery --out evidence.json</pre>
     <p class="demo-fine">Node 20 or newer. No npm dependencies, model calls or telemetry. The starter data is fictional. MIT licensed.</p>
   </section>
 </main>

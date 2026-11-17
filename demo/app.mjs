@@ -50,9 +50,15 @@ function renderSources() {
     ),
     sourceCard(
       "BigQuery",
-      "Warehouse",
+      "GCP warehouse",
       "Query a long-format metric table through the bq CLI. The same rows can feed Looker Studio views.",
-      '{\n  "kind": "bigquery",\n  "config": {\n    "project": "my-project",\n    "dataset": "analytics",\n    "table": "metric_daily",\n    "dateColumn": "metric_date"\n  }\n}',
+      '{\n  "kind": "bigquery",\n  "config": {\n    "project": "my-project",\n    "dataset": "analytics",\n    "table": "metric_daily"\n  }\n}',
+    ),
+    sourceCard(
+      "SQL warehouse",
+      "Snowflake · Redshift · Athena · DuckDB",
+      "Run an installed warehouse CLI. The same dashboard contract works across providers with --source.",
+      '{\n  "kind": "sql-cli",\n  "config": {\n    "preset": "snowflake",\n    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM analytics.metric_daily WHERE metric_date BETWEEN DATE \'{{start}}\' AND DATE \'{{end}}\'",\n    "format": "csv"\n  }\n}',
     ),
   ];
   $("#source-grid").innerHTML = cards.join("");
@@ -183,7 +189,7 @@ async function main() {
   $("#download-fields").addEventListener("click", () => download("looker-fields.csv", lookerFieldsCsv(state.catalog), "text/csv"));
   $("#download-evidence").addEventListener("click", () => download("evidence.json", JSON.stringify(state.evidence, null, 2), "application/json"));
   $("#copy-init").addEventListener("click", async () => {
-    const command = "git clone https://github.com/Automatron-workflows/argus-harness.git\nnode argus-harness/bin/argus-harness.mjs init ./my-dashboard";
+    const command = "git clone https://github.com/Automatron-workflows/argus-harness.git\nnode argus-harness/bin/argus-harness.mjs init ./my-warehouse --template warehouse";
     try {
       await navigator.clipboard.writeText(command);
       $("#copy-init").textContent = "Copied";
