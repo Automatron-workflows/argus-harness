@@ -73,6 +73,9 @@ test("CSV and JSON rows normalize to the canonical shape", () => {
   assert.deepEqual(csv[0], { metric_key: "mrr_eur", metric_date: "2026-11-15", value: "120", source: "billing", computed_at: "2026-11-15T06:00:00Z" });
   const json = parseRows('[{"metric_key":"mrr_eur","metric_date":"2026-11-15","value":120}]', "json");
   assert.equal(json[0].metric_key, "mrr_eur");
+  const banner = parseRows("* SnowSQL *\nConnecting to analytics\nmetric_key,metric_date,value,source,computed_at\nmrr_eur,2026-11-15,120,billing,2026-11-15T06:00:00Z\n", "csv");
+  assert.equal(banner.length, 1);
+  assert.equal(banner[0].metric_key, "mrr_eur");
 });
 
 test("warehouse child processes receive only the allowlisted environment", () => {

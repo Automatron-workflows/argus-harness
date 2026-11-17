@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- CSV output skips provider preamble lines before the canonical header (for
+  example SnowSQL's connection banner).
+- 33 tests.
+
 ## 0.2.3 · 17 November 2026
 
 - BigQuery child processes use an allowlisted environment.

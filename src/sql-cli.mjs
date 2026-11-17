@@ -119,7 +119,12 @@ function normalizeRow(row) {
 
 function parseRows(text, format) {
   if (format === "json") return parseJsonRows(text).map(normalizeRow);
-  return rowsFromCsv(text).map(normalizeRow);
+  const lines = text.split(/\r?\n/);
+  const headerIndex = lines.findIndex(
+    (line) => /metric_key/i.test(line) && /metric_date/i.test(line),
+  );
+  const clean = headerIndex > 0 ? lines.slice(headerIndex).join("\n") : text;
+  return rowsFromCsv(clean).map(normalizeRow);
 }
 
 async function runAthena({ source, sql, env, timeoutMs }) {
