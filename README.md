@@ -11,6 +11,7 @@ Extracted from [Argus](https://github.com/UpswitchEU/argus), the internal
 analytics dashboard at Upswitch.
 
 [Try the workshop](https://automatron-workflows.github.io/argus-harness/demo/) ·
+[Download v0.1.0](https://github.com/Automatron-workflows/argus-harness/releases/tag/v0.1.0) ·
 [Read the primitives](docs/PRIMITIVES.md) · [Audit](docs/ARGUS-AUDIT.md) ·
 [Looker Studio](docs/LOOKER-STUDIO.md)
 
