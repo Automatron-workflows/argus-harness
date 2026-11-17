@@ -57,6 +57,12 @@ test("the warehouse template loads and a source override changes the provider", 
     assert.match(doctor.stdout, /snowflake\s+·\s+snowsql/);
     const local = await run(process.execPath, [bin, "audit", "--project", warehouse, "--source", "custom-local", "--now", "2026-11-15T12:00:00.000Z"]);
     assert.match(local.stdout, /0 fail/);
+    const ddl = await run(process.execPath, [bin, "warehouse-ddl", "--project", warehouse, "--dialect", "duckdb", "--out", join(warehouse, "warehouse.sql")]);
+    assert.match(ddl.stdout, /warehouse\.sql/);
+    assert.match(await readFile(join(warehouse, "warehouse.sql"), "utf8"), /CREATE TABLE IF NOT EXISTS metric_daily/);
+    const fields = await run(process.execPath, [bin, "fields", "--project", warehouse, "--out", join(warehouse, "fields")]);
+    assert.match(fields.stdout, /looker-fields\.csv/);
+    assert.match(await readFile(join(warehouse, "fields", "looker-fields.csv"), "utf8"), /mrr_eur/);
 
     await run(process.execPath, [bin, "init", starter]);
     const alternate = JSON.parse(await readFile(join(starter, "data", "snapshot.json"), "utf8"));

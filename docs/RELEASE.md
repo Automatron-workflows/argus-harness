@@ -1,5 +1,22 @@
 # Releases
 
+## v0.2.1 · 17 November 2026
+
+Adds the portable warehouse DDL and field-map commands. Source revision: the
+commit tagged `v0.2.1`. Tarball: `automatron-argus-harness-0.2.1.tgz`.
+
+- `warehouse-ddl --dialect snowflake|postgres|redshift|duckdb` emits the catalog,
+  daily/status tables and the latest/daily/health views.
+- `fields` emits the Looker Studio field map without BigQuery-specific SQL.
+- 32 tests.
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.1/automatron-argus-harness-0.2.1.tgz
+```
+
 ## v0.2.0 · 17 November 2026
 
 Warehouse boilerplate release. Source revision: the commit tagged `v0.2.0`.
@@ -16,7 +33,7 @@ Adds:
 - BigQuery `config.sql` custom projection.
 - Athena polling/pagination and JSON result parsing.
 - Child-process environment allowlist.
-- 31 tests.
+- 32 tests.
 
 Install:
 

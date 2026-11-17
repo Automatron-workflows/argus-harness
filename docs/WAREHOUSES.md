@@ -24,11 +24,18 @@ cd my-warehouse
 node ../bin/argus-harness.mjs doctor --project .
 node ../bin/argus-harness.mjs render --project . --source bigquery --out dashboard.html
 node ../bin/argus-harness.mjs audit --project . --source bigquery --out evidence.json
+node ../bin/argus-harness.mjs warehouse-ddl --project . --dialect snowflake --out warehouse/generated.sql
+node ../bin/argus-harness.mjs fields --project . --out looker
 ```
 
 The starter includes `bigquery`, `snowflake`, `postgres`, `redshift`, `duckdb`
-and `athena` source files. The dashboard uses `bigquery` by default; `--source`
-runs the same dashboard contract against another provider.
+and `athena` source files plus an offline `custom-local` fixture. The dashboard
+uses `bigquery` by default; `--source` runs the same dashboard contract against
+another provider.
+
+`warehouse-ddl` emits the canonical tables and views for Snowflake, Postgres,
+Redshift or DuckDB. BigQuery uses `argus-harness looker`. `fields` emits the
+Looker Studio field map without BigQuery-specific SQL.
 
 ## BigQuery
 

@@ -8,4 +8,5 @@ export * from "./csv.mjs";
 export * from "./audit.mjs";
 export * from "./bigquery.mjs";
 export * from "./looker.mjs";
+export * from "./warehouse-ddl.mjs";
 export * from "./render.mjs";

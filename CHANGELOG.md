@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 · 17 November 2026
+
+- Added `warehouse-ddl` for Snowflake, Postgres, Redshift and DuckDB: catalog,
+  daily/status tables and latest/daily/health views.
+- Added `fields` for the Looker Studio field map without BigQuery SQL.
+- 32 tests.
+
 ## 0.2.0 · 17 November 2026
 
 - Added the `sql-cli` warehouse source: Snowflake, Postgres, Redshift, DuckDB,
@@ -11,7 +18,7 @@
 - Added BigQuery custom `sql` projections.
 - Added Athena query polling, pagination and JSON result parsing.
 - Added a child-process environment allowlist.
-- Added 31 tests and `docs/WAREHOUSES.md`.
+- Added 32 tests and `docs/WAREHOUSES.md`.
 
 ## 0.1.0 · 16 November 2026
 

@@ -1,5 +1,11 @@
 # Status
 
+## v0.2.1 · 17 November 2026
+
+- Added portable `warehouse-ddl` for Snowflake, Postgres, Redshift and DuckDB.
+- Added `fields` for a Looker Studio field map without BigQuery SQL.
+- 32 tests.
+
 ## v0.2.0 · 17 November 2026
 
 Implemented on top of v0.1.0:
@@ -12,7 +18,7 @@ Implemented on top of v0.1.0:
 - BigQuery custom `sql` projections.
 - Athena polling, pagination and JSON result parsing.
 - Child-process environment allowlist.
-- 31 tests, including fake CLI and Athena command coverage.
+- 32 tests, including fake CLI and Athena command coverage.
 
 Not implemented:
 

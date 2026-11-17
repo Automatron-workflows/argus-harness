@@ -8,6 +8,7 @@ import { loadProject } from "../src/project.mjs";
 import { parseRows, runSqlCli, SqlCliUnavailable } from "../src/sql-cli.mjs";
 import { validateDashboard, validateMetric, validateSource, HarnessError } from "../src/schema.mjs";
 import { loadSnapshot } from "../src/sources.mjs";
+import { warehouseDdl } from "../src/warehouse-ddl.mjs";
 
 const warehouseRoot = resolve("examples/warehouse-starter");
 
@@ -22,6 +23,20 @@ test("the warehouse starter loads every provider source", async () => {
   }
   assert.equal(project.sources.get("snowflake").config.preset, "snowflake");
   assert.equal(project.sources.get("athena").config.preset, "athena");
+});
+
+test("warehouse DDL covers the portable dialects without undefined values", async () => {
+  const project = await loadProject(warehouseRoot);
+  for (const dialect of ["snowflake", "postgres", "redshift", "duckdb"]) {
+    const sql = warehouseDdl(dialect, project.metrics);
+    assert.match(sql, /CREATE TABLE IF NOT EXISTS metric_catalog/);
+    assert.match(sql, /CREATE OR REPLACE VIEW v_metric_health/);
+    assert.match(sql, /INSERT INTO metric_catalog/);
+    assert.match(sql, /metric_date DATE/);
+    assert.doesNotMatch(sql, /undefined/);
+  }
+  assert.match(warehouseDdl("snowflake", project.metrics), /DATEDIFF\('day'/);
+  assert.match(warehouseDdl("postgres", project.metrics), /CURRENT_DATE - l\.metric_date/);
 });
 
 test("custom SQL sources require a command and a single SELECT", () => {
