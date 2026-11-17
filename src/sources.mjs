@@ -5,6 +5,8 @@ import { BigQueryUnavailable, runBigQuery } from "./bigquery.mjs";
 import { inside, readJson } from "./project.mjs";
 import { normalizeHistory } from "./series.mjs";
 import { validateSnapshot } from "./schema.mjs";
+import { parseCsv } from "./csv.mjs";
+import { runSqlCli } from "./sql-cli.mjs";
 
 const STATUS = {
   live: "Live snapshot",
@@ -270,42 +272,6 @@ async function fetchJson({ source, env, fetchImpl, timeoutMs, window }) {
   }
 }
 
-function parseCsv(text, delimiter = ",") {
-  const rows = [];
-  let row = [];
-  let cell = "";
-  let quoted = false;
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    if (quoted) {
-      if (char === '"' && text[index + 1] === '"') {
-        cell += '"';
-        index += 1;
-      } else if (char === '"') {
-        quoted = false;
-      } else {
-        cell += char;
-      }
-    } else if (char === '"') {
-      quoted = true;
-    } else if (char === delimiter) {
-      row.push(cell);
-      cell = "";
-    } else if (char === "\n") {
-      row.push(cell.replace(/\r$/, ""));
-      if (row.some((value) => value.length)) rows.push(row);
-      row = [];
-      cell = "";
-    } else {
-      cell += char;
-    }
-  }
-  if (cell.length || row.length) {
-    row.push(cell);
-    if (row.some((value) => value.length)) rows.push(row);
-  }
-  return rows;
-}
 
 export async function loadSnapshot({
   project,
@@ -372,7 +338,22 @@ export async function loadSnapshot({
       });
     }
   }
+  if (source.kind === "sql-cli") {
+    try {
+      const rows = await runSqlCli({ source, window: trailingWindow(nowIso(now).slice(0, 10), dashboard.window.days), env, projectRoot: project.root });
+      return snapshotFromRows({ rows: rowsFrom(rows, source), source, dashboard, metrics: project.metrics, now, status: source.status });
+    } catch (error) {
+      return emptySnapshot({
+        source,
+        dashboard,
+        metrics: project.metrics,
+        now,
+        status: dataStatus("unavailable", "Warehouse query failed", String(error.message ?? error).slice(0, 900)),
+      });
+    }
+  }
   throw new Error(`Unsupported source kind "${source.kind}"`);
 }
 
-export { dataStatus, getPath, parseCsv, snapshotFromGeneric };
+export { dataStatus, getPath, snapshotFromGeneric };
+export { parseCsv } from "./csv.mjs";

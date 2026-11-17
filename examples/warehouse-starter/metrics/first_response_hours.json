@@ -1,0 +1,16 @@
+{
+  "schema": "argus.metric/1",
+  "key": "first_response_hours",
+  "label": "First response",
+  "description": "Median hours from a support request to the first human response. Lower is better.",
+  "unit": "hours",
+  "direction": "down",
+  "aggregation": "average",
+  "nullPolicy": "gap",
+  "owner": "Support",
+  "version": 1,
+  "target": {
+    "value": 4,
+    "label": "Under 4 hours"
+  }
+}

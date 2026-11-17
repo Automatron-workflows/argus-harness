@@ -63,7 +63,8 @@ Kinds:
 - `static-json`: `{ "path": "data/snapshot.json" }`
 - `http-json`: `{ "url", "method", "headers", "timeoutMs", "preset", "response", "metricOverrides" }`
 - `csv`: `{ "path", "delimiter" }`
-- `bigquery`: project/dataset/table and column names.
+- `bigquery`: project/dataset/table and column names, or a custom `sql` projection.
+- `sql-cli`: `preset` (`snowflake`, `postgres`, `redshift`, `duckdb`, `athena`, `bigquery`, `custom`), a single `sql` SELECT/WITH statement, optional `command`/`args`/`stdin`/`cwd`, `format` (`csv` or `json`) and an `env` allowlist. Athena adds `region`, `database`, `outputLocation` and optional `workgroup`.
 
 `headers` values may use `${ENV_VAR}`. Do not put a literal token in a project.
 `preset: "titan-bundle"` maps a bundle with `metrics[key].latest` and

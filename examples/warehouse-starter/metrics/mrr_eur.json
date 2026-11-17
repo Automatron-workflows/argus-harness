@@ -1,0 +1,19 @@
+{
+  "schema": "argus.metric/1",
+  "key": "mrr_eur",
+  "label": "Monthly recurring revenue",
+  "description": "Invoice-backed recurring revenue for active paid subscriptions. The latest measured row, not an annualised estimate.",
+  "unit": "currency_eur",
+  "direction": "up",
+  "aggregation": "latest",
+  "nullPolicy": "gap",
+  "owner": "Finance",
+  "version": 1,
+  "target": {
+    "value": 25000,
+    "label": "€25k monthly target"
+  },
+  "format": {
+    "decimals": 0
+  }
+}

@@ -3,6 +3,8 @@ export * from "./format.mjs";
 export * from "./series.mjs";
 export * from "./schema.mjs";
 export * from "./sources.mjs";
+export * from "./sql-cli.mjs";
+export * from "./csv.mjs";
 export * from "./audit.mjs";
 export * from "./bigquery.mjs";
 export * from "./looker.mjs";

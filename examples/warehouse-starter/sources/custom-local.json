@@ -1,0 +1,18 @@
+{
+  "schema": "argus.source/1",
+  "id": "custom-local",
+  "label": "Local sample",
+  "description": "Offline smoke test for the custom SQL command contract. It reads the sample CSV instead of a warehouse; replace it with your own command.",
+  "kind": "sql-cli",
+  "freshnessHours": 8760,
+  "config": {
+    "preset": "custom",
+    "command": "node",
+    "args": ["data/query.mjs"],
+    "cwd": ".",
+    "format": "csv",
+    "env": [],
+    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM metric_daily WHERE metric_date BETWEEN DATE '{{start}}' AND DATE '{{end}}'",
+    "timeoutMs": 30000
+  }
+}

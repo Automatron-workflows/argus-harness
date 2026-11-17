@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { applySqlTemplate } from "./sql-template.mjs";
 
 const run = promisify(execFile);
 
@@ -12,11 +13,14 @@ export class BigQueryUnavailable extends Error {
 
 export function bigQueryTable(source) {
   const { project, dataset, table } = source.config;
+  if (!dataset || !table) return null;
   return table.includes(".") ? table : `${project}.${dataset}.${table}`;
 }
 
 export function buildBigQuerySql(source, window) {
+  if (source.config.sql) return applySqlTemplate(source.config.sql, window);
   const table = bigQueryTable(source);
+  if (!table) throw new Error("BigQuery source needs dataset and table, or a custom sql projection");
   if (!/^[A-Za-z0-9_$.-]{1,1024}$/.test(table)) throw new Error("Invalid BigQuery table identifier");
   const { dateColumn, metricColumn, valueColumn, sourceColumn, computedAtColumn } = source.config;
   for (const column of [dateColumn, metricColumn, valueColumn, sourceColumn, computedAtColumn]) {

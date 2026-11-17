@@ -9,7 +9,7 @@ npm test
 npm run check
 ```
 
-- **23 Node tests** pass: calendar validity, metric/dashboard/snapshot
+- **31 Node tests** pass: calendar validity, metric/dashboard/snapshot
   validation, series gaps, nice ticks, growth rate suppression, formatting,
   healthy/stale/empty audits, renderer escaping and unavailable values, CSV
   parsing, row-to-snapshot normalization, HTTP success/failure, BigQuery SQL
@@ -24,6 +24,10 @@ npm run check
   temporary directory.
 - The Looker export writes `bigquery.sql`, `looker-fields.csv`,
   `looker-fields.json` and `README.md`.
+- The warehouse starter loads 6 provider sources; the custom SQL command runs
+  against a local fixture; Athena polling/parsing is tested with a fake `aws`
+  command; a missing command returns an unavailable snapshot; `--source`
+  overrides the provider and the audit records it.
 
 ## Browser
 

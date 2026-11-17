@@ -1,0 +1,16 @@
+{
+  "schema": "argus.source/1",
+  "id": "postgres",
+  "label": "Postgres",
+  "description": "Long-format metric_daily table queried through psql. The connection string is read from DATABASE_URL; no credential is stored in this project.",
+  "kind": "sql-cli",
+  "freshnessHours": 26,
+  "config": {
+    "preset": "postgres",
+    "connectionEnv": "DATABASE_URL",
+    "env": ["DATABASE_URL"],
+    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM analytics.metric_daily WHERE metric_date BETWEEN DATE '{{start}}' AND DATE '{{end}}' ORDER BY metric_key, metric_date",
+    "format": "csv",
+    "timeoutMs": 120000
+  }
+}

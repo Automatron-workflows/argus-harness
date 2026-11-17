@@ -1,0 +1,16 @@
+{
+  "schema": "argus.metric/1",
+  "key": "new_accounts_30d",
+  "label": "New accounts · 30d",
+  "description": "Accounts created in the trailing 30 calendar days. This is a rolling count, not a daily signup count.",
+  "unit": "count",
+  "direction": "up",
+  "aggregation": "rolling",
+  "nullPolicy": "gap",
+  "owner": "Growth",
+  "version": 1,
+  "window": {
+    "kind": "trailing",
+    "days": 30
+  }
+}

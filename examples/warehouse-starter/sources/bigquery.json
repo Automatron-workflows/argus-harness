@@ -1,0 +1,19 @@
+{
+  "schema": "argus.source/1",
+  "id": "bigquery",
+  "label": "BigQuery",
+  "description": "Long-format metric_daily table in BigQuery. Replace the project, dataset and table placeholders; the bq CLI uses your existing login.",
+  "kind": "bigquery",
+  "freshnessHours": 26,
+  "config": {
+    "project": "YOUR_GCP_PROJECT",
+    "dataset": "YOUR_DATASET",
+    "table": "metric_daily",
+    "dateColumn": "metric_date",
+    "metricColumn": "metric_key",
+    "valueColumn": "value",
+    "sourceColumn": "source",
+    "computedAtColumn": "computed_at",
+    "location": "EU"
+  }
+}

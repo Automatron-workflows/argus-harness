@@ -11,7 +11,7 @@ Extracted from [Argus](https://github.com/UpswitchEU/argus), the internal
 analytics dashboard at Upswitch.
 
 [Try the workshop](https://automatron-workflows.github.io/argus-harness/demo/) ·
-[Download v0.1.0](https://github.com/Automatron-workflows/argus-harness/releases/tag/v0.1.0) ·
+[Download v0.2.0](https://github.com/Automatron-workflows/argus-harness/releases/tag/v0.2.0) ·
 [Read the primitives](docs/PRIMITIVES.md) · [Audit](docs/ARGUS-AUDIT.md) ·
 [Looker Studio](docs/LOOKER-STUDIO.md)
 
@@ -53,7 +53,7 @@ Install the pinned `v0.1.0` tarball, or clone the repository for development:
 
 ```sh
 npm install --ignore-scripts \
-  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.1.0/automatron-argus-harness-0.1.0.tgz
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.0/automatron-argus-harness-0.2.0.tgz
 
 npx argus-harness init ./my-dashboard
 cd my-dashboard
@@ -124,6 +124,7 @@ manage credentials.
 | `http-json` | A product API. Supports a timeout, environment-backed headers, a generic response map and the Titan-style metrics bundle. |
 | `csv` | An export with `metric_key,date,value,source,computed_at`. |
 | `bigquery` | A long-format metric table queried through the `bq` CLI. |
+| `sql-cli` | Snowflake, Postgres, Redshift, DuckDB, Athena or any custom SQL command that prints CSV/JSON rows. |
 
 An adapter returns measured rows plus a status. A failed request returns an
 unavailable snapshot with null values; it does not return zeroes. No credentials
@@ -133,6 +134,11 @@ at load time.
 A custom adapter is one function: read your source, return rows with
 `metric_key`, `metric_date`, `value`, optional `source` and `computed_at`, then
 call `snapshotFromRows`.
+
+For warehouses, the starter is `init --template warehouse`. It includes source
+boilerplates for BigQuery, Snowflake, Postgres, AWS Redshift, DuckDB and AWS
+Athena. Use `--source <id>` to run the same dashboard contract against another
+provider. See [Warehouses](docs/WAREHOUSES.md).
 
 ## The audit
 
@@ -197,7 +203,9 @@ for the current record and its limits.
 | `src/cli.mjs` | `init`, `doctor`, `catalog`, `render`, `audit`, `looker`, `bigquery-sql` |
 | `packs/aurora` | The dark Aurora tokens extracted from Argus |
 | `examples/starter` | A complete fictional project |
+| `examples/warehouse-starter` | Warehouse boilerplates for BigQuery, Snowflake, Postgres, Redshift, DuckDB and Athena |
 | `examples/argus-reference` | The 35 preserved Argus metric definitions, reading the public portfolio snapshot |
+| `docs/WAREHOUSES.md` | Canonical rows, provider commands and the custom SQL adapter |
 | `demo` | The public workshop |
 | `docs/PRIMITIVES.md` | What was locked and why |
 | `docs/ARGUS-AUDIT.md` | The extraction audit from Argus source |

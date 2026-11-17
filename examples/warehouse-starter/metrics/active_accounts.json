@@ -1,0 +1,16 @@
+{
+  "schema": "argus.metric/1",
+  "key": "active_accounts",
+  "label": "Active accounts",
+  "description": "Accounts with a sign-in, report or other recorded activity in the trailing 30 days.",
+  "unit": "count",
+  "direction": "up",
+  "aggregation": "latest",
+  "nullPolicy": "gap",
+  "owner": "Product",
+  "version": 1,
+  "target": {
+    "value": 400,
+    "label": "400 active accounts"
+  }
+}

@@ -188,12 +188,19 @@ export function validateMetric(input, path = "metric") {
   });
 }
 
+function validateSql(value, path) {
+  const sql = string(value, path, { max: 30000 });
+  if (!/^\s*(select|with)\b/i.test(sql)) fail("sql must start with SELECT or WITH", path);
+  if (/;\s*\S/.test(sql)) fail("sql must be a single statement", path);
+  return sql;
+}
+
 export function validateSource(input, path = "source") {
   const source = object(input, path);
   if (source.schema !== undefined && source.schema !== "argus.source/1") {
     fail("schema must be argus.source/1", `${path}.schema`);
   }
-  const kind = oneOf(source.kind, ["static-json", "http-json", "csv", "bigquery"], `${path}.kind`);
+  const kind = oneOf(source.kind, ["static-json", "http-json", "csv", "bigquery", "sql-cli"], `${path}.kind`);
   const config = object(source.config, `${path}.config`);
   let normalizedConfig;
   if (kind === "static-json") {
@@ -262,18 +269,24 @@ export function validateSource(input, path = "source") {
           }
         : {}),
     });
-  } else {
+  } else if (kind === "bigquery") {
     const project = string(config.project, `${path}.config.project`, { max: 128, pattern: /^[A-Za-z0-9_.:-]+$/ });
-    const dataset = string(config.dataset, `${path}.config.dataset`, { max: 128, pattern: IDENTIFIER });
-    const table = string(config.table, `${path}.config.table`, { max: 128, pattern: BIGQUERY_TABLE });
+    const sql = config.sql === undefined ? undefined : validateSql(config.sql, `${path}.config.sql`);
+    const dataset = sql
+      ? optionalString(config.dataset, `${path}.config.dataset`, { max: 128, pattern: IDENTIFIER })
+      : string(config.dataset, `${path}.config.dataset`, { max: 128, pattern: IDENTIFIER });
+    const table = sql
+      ? optionalString(config.table, `${path}.config.table`, { max: 128, pattern: BIGQUERY_TABLE })
+      : string(config.table, `${path}.config.table`, { max: 128, pattern: BIGQUERY_TABLE });
     const column = (name, fallback) => {
       const value = config[name] ?? fallback;
       return string(value, `${path}.config.${name}`, { max: 128, pattern: IDENTIFIER });
     };
     normalizedConfig = Object.freeze({
       project,
-      dataset,
-      table,
+      ...(dataset ? { dataset } : {}),
+      ...(table ? { table } : {}),
+      ...(sql ? { sql } : {}),
       dateColumn: column("dateColumn", "metric_date"),
       metricColumn: column("metricColumn", "metric_key"),
       valueColumn: column("valueColumn", "value"),
@@ -282,6 +295,65 @@ export function validateSource(input, path = "source") {
       ...(config.location === undefined
         ? {}
         : { location: string(config.location, `${path}.config.location`, { max: 40 }) }),
+    });
+  } else {
+    const preset = oneOf(config.preset ?? "custom", ["bigquery", "snowflake", "postgres", "redshift", "duckdb", "athena", "custom"], `${path}.config.preset`);
+    const sql = validateSql(config.sql, `${path}.config.sql`);
+    const command = optionalString(config.command, `${path}.config.command`, { max: 200 });
+    if (preset === "custom" && !command) fail("custom sql-cli sources require config.command", `${path}.config.command`);
+    if (preset === "athena" && (!config.database || !config.outputLocation)) {
+      fail("athena requires config.database and config.outputLocation", `${path}.config`);
+    }
+    const args = config.args
+      ? array(config.args, `${path}.config.args`, { max: 40 }).map((item, index) => string(item, `${path}.config.args[${index}]`, { max: 2000 }))
+      : undefined;
+    const env = config.env
+      ? array(config.env, `${path}.config.env`, { max: 30 }).map((item, index) => string(item, `${path}.config.env[${index}]`, { max: 120, pattern: /^[A-Z][A-Z0-9_]*$/ }))
+      : undefined;
+    normalizedConfig = Object.freeze({
+      preset,
+      sql,
+      ...(command ? { command } : {}),
+      ...(args ? { args } : {}),
+      ...(config.cwd === undefined ? {} : { cwd: string(config.cwd, `${path}.config.cwd`, { max: 500 }) }),
+      ...(config.stdin === undefined ? {} : { stdin: Boolean(config.stdin) }),
+      ...(config.format === undefined
+        ? {}
+        : { format: oneOf(config.format, ["csv", "json"], `${path}.config.format`) }),
+      ...(env ? { env } : {}),
+      ...(config.timeoutMs === undefined
+        ? { timeoutMs: 120000 }
+        : { timeoutMs: number(config.timeoutMs, `${path}.config.timeoutMs`, { min: 1000, max: 600000, integer: true }) }),
+      ...(config.connection === undefined
+        ? {}
+        : { connection: string(config.connection, `${path}.config.connection`, { max: 120 }) }),
+      ...(config.database === undefined
+        ? {}
+        : { database: string(config.database, `${path}.config.database`, { max: 200 }) }),
+      ...(config.schema === undefined
+        ? {}
+        : { schema: string(config.schema, `${path}.config.schema`, { max: 120 }) }),
+      ...(config.warehouse === undefined
+        ? {}
+        : { warehouse: string(config.warehouse, `${path}.config.warehouse`, { max: 120 }) }),
+      ...(config.role === undefined
+        ? {}
+        : { role: string(config.role, `${path}.config.role`, { max: 120 }) }),
+      ...(config.connectionEnv === undefined
+        ? {}
+        : { connectionEnv: string(config.connectionEnv, `${path}.config.connectionEnv`, { max: 120, pattern: /^[A-Z][A-Z0-9_]*$/ }) }),
+      ...(config.region === undefined
+        ? {}
+        : { region: string(config.region, `${path}.config.region`, { max: 60 }) }),
+      ...(config.outputLocation === undefined
+        ? {}
+        : { outputLocation: string(config.outputLocation, `${path}.config.outputLocation`, { max: 500 }) }),
+      ...(config.workgroup === undefined
+        ? {}
+        : { workgroup: string(config.workgroup, `${path}.config.workgroup`, { max: 120 }) }),
+      ...(config.profile === undefined
+        ? {}
+        : { profile: string(config.profile, `${path}.config.profile`, { max: 120 }) }),
     });
   }
   return Object.freeze({

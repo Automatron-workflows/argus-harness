@@ -1,0 +1,19 @@
+{
+  "schema": "argus.source/1",
+  "id": "athena",
+  "label": "AWS Athena",
+  "description": "Long-format metric table queried through the AWS CLI. Athena needs a database and an S3 location for query results; credentials come from the AWS profile or environment.",
+  "kind": "sql-cli",
+  "freshnessHours": 26,
+  "config": {
+    "preset": "athena",
+    "region": "eu-west-1",
+    "database": "YOUR_ATHENA_DATABASE",
+    "outputLocation": "s3://YOUR_ATHENA_RESULTS/",
+    "workgroup": "primary",
+    "env": ["AWS_PROFILE", "AWS_REGION", "AWS_DEFAULT_REGION"],
+    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM YOUR_ATHENA_DATABASE.metric_daily WHERE metric_date BETWEEN DATE '{{start}}' AND DATE '{{end}}' ORDER BY metric_key, metric_date",
+    "format": "json",
+    "timeoutMs": 180000
+  }
+}

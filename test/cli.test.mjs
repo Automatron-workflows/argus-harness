@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -42,6 +42,50 @@ test("init, doctor, render, audit and looker work from an empty directory", asyn
     assert.match(await readFile(join(dir, "looker", "looker-fields.csv"), "utf8"), /mrr_eur/);
   } finally {
     await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("the warehouse template loads and a source override changes the provider", async () => {
+  const warehouse = await mkdtemp(join(tmpdir(), "argus-warehouse-init-"));
+  const starter = await mkdtemp(join(tmpdir(), "argus-source-override-"));
+  try {
+    const init = await run(process.execPath, [bin, "init", warehouse, "--template", "warehouse"]);
+    assert.match(init.stdout, /\(warehouse\)/);
+    const doctor = await run(process.execPath, [bin, "doctor", "--project", warehouse]);
+    assert.match(doctor.stdout, /ok\s+sources\s+7/);
+    assert.match(doctor.stdout, /athena\s+·\s+aws/);
+    assert.match(doctor.stdout, /snowflake\s+·\s+snowsql/);
+    const local = await run(process.execPath, [bin, "audit", "--project", warehouse, "--source", "custom-local", "--now", "2026-11-15T12:00:00.000Z"]);
+    assert.match(local.stdout, /0 fail/);
+
+    await run(process.execPath, [bin, "init", starter]);
+    const alternate = JSON.parse(await readFile(join(starter, "data", "snapshot.json"), "utf8"));
+    alternate.source = "alternate";
+    await writeFile(join(starter, "data", "alternate.json"), JSON.stringify(alternate));
+    await writeFile(
+      join(starter, "sources", "alternate.json"),
+      JSON.stringify({
+        schema: "argus.source/1",
+        id: "alternate",
+        label: "Alternate snapshot",
+        description: "A second static source for the override test.",
+        kind: "static-json",
+        freshnessHours: 8760,
+        config: { path: "data/alternate.json" },
+      }),
+    );
+    const render = await run(process.execPath, [bin, "render", "--project", starter, "--source", "alternate", "--out", join(starter, "alternate.html")]);
+    assert.match(render.stdout, /Rendered growth/);
+    const audit = await run(process.execPath, [bin, "audit", "--project", starter, "--source", "alternate", "--out", join(starter, "alternate-evidence.json")]);
+    assert.match(audit.stdout, /pass/);
+    const evidence = JSON.parse(await readFile(join(starter, "alternate-evidence.json"), "utf8"));
+    assert.equal(evidence.source, "alternate");
+    assert.equal(evidence.summary.fail, 0);
+  } finally {
+    await Promise.all([
+      rm(warehouse, { recursive: true, force: true }),
+      rm(starter, { recursive: true, force: true }),
+    ]);
   }
 });
 

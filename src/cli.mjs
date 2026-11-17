@@ -12,21 +12,25 @@ import { loadSnapshot } from "./sources.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "..");
-const STARTER = join(ROOT, "examples", "starter");
+const TEMPLATES = {
+  starter: join(ROOT, "examples", "starter"),
+  warehouse: join(ROOT, "examples", "warehouse-starter"),
+};
 
 const HELP = `Argus Harness — dashboards that keep definitions, freshness and missing data visible.
 
 Usage:
-  argus-harness init <dir> [--template starter]
+  argus-harness init <dir> [--template starter|warehouse]
   argus-harness doctor [--project <dir>] [--json]
   argus-harness catalog [--project <dir>] [--json]
-  argus-harness render [--project <dir>] [--dashboard <id>] [--snapshot <file>] [--out <file>] [--now <iso>]
-  argus-harness audit [--project <dir>] [--dashboard <id>] [--snapshot <file>] [--out <file>] [--strict] [--json] [--now <iso>]
+  argus-harness render [--project <dir>] [--dashboard <id>] [--source <id>] [--snapshot <file>] [--out <file>] [--now <iso>]
+  argus-harness audit [--project <dir>] [--dashboard <id>] [--source <id>] [--snapshot <file>] [--out <file>] [--strict] [--json] [--now <iso>]
   argus-harness looker [--project <dir>] [--out <dir>]
   argus-harness bigquery-sql [--project <dir>] [--dashboard <id>]
   argus-harness version
 
-A source is one of: static-json, http-json, csv, bigquery.
+A source is one of: static-json, http-json, csv, bigquery, sql-cli.
+Use --source to run one dashboard contract against another configured warehouse.
 No credentials are stored in the project. HTTP header values may reference ${"${ENV}"}.
 `;
 
@@ -73,6 +77,15 @@ function dashboardFrom(project, id) {
   return dashboard;
 }
 
+function dashboardWithSource(project, dashboard, flags) {
+  const sourceId = flagValue(flags, "source");
+  if (!sourceId) return dashboard;
+  if (!project.sources.has(sourceId)) {
+    throw new Error(`Unknown source "${sourceId}". Available: ${[...project.sources.keys()].join(", ")}`);
+  }
+  return { ...dashboard, source: sourceId };
+}
+
 async function readVersion() {
   const pkg = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8"));
   return pkg.version;
@@ -81,14 +94,35 @@ async function readVersion() {
 async function init(args, flags) {
   const destination = resolve(args[0] ?? "argus-dashboard");
   const template = String(flags.template ?? "starter");
-  if (template !== "starter") throw new Error(`Unknown template "${template}". Only "starter" is available.`);
+  const source = TEMPLATES[template];
+  if (!source) throw new Error(`Unknown template "${template}". Available: ${Object.keys(TEMPLATES).join(", ")}`);
   const existing = await readdir(destination).catch(() => []);
   if (existing.length) throw new Error(`Destination is not empty: ${destination}`);
-  await cp(STARTER, destination, { recursive: true });
+  await cp(source, destination, { recursive: true });
   await mkdir(join(destination, ".argus-harness"), { recursive: true });
-  await writeFile(
-    join(destination, ".argus-harness", "START_HERE.md"),
-    `# Start here
+  const bin = join(ROOT, "bin", "argus-harness.mjs");
+  const startHere = template === "warehouse"
+    ? `# Start here
+
+This is the warehouse starter. It contains one metric catalog, one dashboard and
+source boilerplates for BigQuery, Snowflake, Postgres/Redshift, DuckDB, Athena
+and a custom SQL command.
+
+1. Read \`argus.config.json\` and \`sources/README.md\`.
+2. Choose one source in \`sources/\` and replace its project, table and connection
+   placeholders. Keep credentials in the environment, never in this folder.
+3. Create the canonical \`metric_daily\` table, or point the source at an existing
+   warehouse table using the provider's SQL file in \`queries/\`.
+4. Run \`node ${bin} doctor --project .\` (offline).
+5. Run \`node ${bin} render --project . --source bigquery --out dashboard.html\`.
+6. Run \`node ${bin} audit --project . --source bigquery --out evidence.json\`.
+7. Run \`node ${bin} looker --project . --out looker\` for the BigQuery/Looker
+   field map, or follow \`docs/WAREHOUSES.md\` for the other providers.
+
+The starter data is fictional. The audit is the gate; a rendered page alone is
+not evidence that the warehouse rows are fresh or complete.
+`
+    : `# Start here
 
 This project was created by Argus Harness. It contains a metric catalog, a source,
 a dashboard contract and a measured snapshot.
@@ -97,15 +131,15 @@ a dashboard contract and a measured snapshot.
 2. Edit \`metrics/*.json\`. Keep the key, unit, aggregation and null policy stable.
 3. Point \`sources/static.json\` at your snapshot, or add an HTTP, CSV or BigQuery
    source. No credentials belong in this folder; use environment variables.
-4. Run \`node ${join(ROOT, "bin", "argus-harness.mjs")} doctor --project .\`.
-5. Run \`node ${join(ROOT, "bin", "argus-harness.mjs")} render --project . --out dashboard.html\`.
-6. Run \`node ${join(ROOT, "bin", "argus-harness.mjs")} audit --project . --out evidence.json\`.
+4. Run \`node ${bin} doctor --project .\`.
+5. Run \`node ${bin} render --project . --out dashboard.html\`.
+6. Run \`node ${bin} audit --project . --out evidence.json\`.
 7. Read \`docs/PRIMITIVES.md\` in the harness repository before adding a new metric.
 
 The starter data is fictional. Replace it with your own measured rows.
-`,
-  );
-  process.stdout.write(`Created ${destination}\nNext: cd ${destination} && node ${join(ROOT, "bin", "argus-harness.mjs")} doctor --project .\n`);
+`;
+  await writeFile(join(destination, ".argus-harness", "START_HERE.md"), startHere);
+  process.stdout.write(`Created ${destination} (${template})\nNext: cd ${destination} && node ${bin} doctor --project .\n`);
 }
 
 async function doctor(flags) {
@@ -131,8 +165,11 @@ async function doctor(flags) {
       }
     } else if (source.kind === "http-json") {
       checks.push([`source:${source.id}`, "info", `${source.config.method} ${new URL(source.config.url).host}`]);
+    } else if (source.kind === "bigquery") {
+      checks.push([`source:${source.id}`, "info", `${source.config.project} · ${source.config.dataset ?? "custom sql"}.${source.config.table ?? ""}`]);
     } else {
-      checks.push([`source:${source.id}`, "info", `${source.config.project}.${source.config.dataset}.${source.config.table}`]);
+      const commands = { bigquery: "bq", snowflake: "snowsql", postgres: "psql", redshift: "psql", duckdb: "duckdb", athena: "aws", custom: "custom" };
+      checks.push([`source:${source.id}`, "info", `${source.config.preset} · ${source.config.command ?? commands[source.config.preset] ?? "custom"}`]);
     }
   }
   const failed = checks.filter(([, level]) => level === "fail").length;
@@ -166,7 +203,7 @@ function auditNow(flags) {
 
 async function render(flags) {
   const project = await projectFrom(flags);
-  const dashboard = dashboardFrom(project, flags.dashboard);
+  const dashboard = dashboardWithSource(project, dashboardFrom(project, flags.dashboard), flags);
   const snapshot = await loadSnapshot({
     project,
     dashboard,
@@ -193,7 +230,7 @@ async function render(flags) {
 
 async function audit(flags) {
   const project = await projectFrom(flags);
-  const dashboard = dashboardFrom(project, flags.dashboard);
+  const dashboard = dashboardWithSource(project, dashboardFrom(project, flags.dashboard), flags);
   const source = project.sources.get(dashboard.source);
   const now = auditNow(flags);
   const snapshot = await loadSnapshot({
@@ -231,7 +268,7 @@ async function looker(flags) {
 
 async function bigquerySql(flags) {
   const project = await projectFrom(flags);
-  const dashboard = dashboardFrom(project, flags.dashboard);
+  const dashboard = dashboardWithSource(project, dashboardFrom(project, flags.dashboard), flags);
   const source = project.sources.get(dashboard.source);
   if (source.kind !== "bigquery") throw new Error(`Dashboard "${dashboard.id}" uses "${source.kind}", not bigquery`);
   const today = new Date().toISOString().slice(0, 10);

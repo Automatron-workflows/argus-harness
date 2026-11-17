@@ -1,0 +1,10 @@
+{
+  "schema": "argus.project/1",
+  "id": "harbour-warehouse",
+  "name": "Harbour warehouse",
+  "pack": "aurora",
+  "metrics": "metrics",
+  "sources": "sources",
+  "dashboards": "dashboards",
+  "defaultDashboard": "growth"
+}

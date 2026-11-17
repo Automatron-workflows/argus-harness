@@ -1,0 +1,15 @@
+{
+  "schema": "argus.source/1",
+  "id": "duckdb",
+  "label": "DuckDB",
+  "description": "Local DuckDB file used for development and CI. Replace the database path; the metric_daily table must exist in that file.",
+  "kind": "sql-cli",
+  "freshnessHours": 26,
+  "config": {
+    "preset": "duckdb",
+    "database": "data/harbour.duckdb",
+    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM metric_daily WHERE metric_date BETWEEN DATE '{{start}}' AND DATE '{{end}}' ORDER BY metric_key, metric_date",
+    "format": "csv",
+    "timeoutMs": 120000
+  }
+}

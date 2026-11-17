@@ -1,5 +1,42 @@
 # Status
 
+## v0.2.0 · 17 November 2026
+
+Implemented on top of v0.1.0:
+
+- `sql-cli` warehouse source with Snowflake, Postgres, Redshift, DuckDB, Athena
+  and a custom command contract.
+- `--source <id>` for one dashboard contract across providers.
+- `init --template warehouse` with source boilerplates, SQL projection examples,
+  a sample CSV and provider setup notes.
+- BigQuery custom `sql` projections.
+- Athena polling, pagination and JSON result parsing.
+- Child-process environment allowlist.
+- 31 tests, including fake CLI and Athena command coverage.
+
+Not implemented:
+
+- A client-side chart renderer with tooltips, a date slider or cross-filtering.
+  The static renderer has an `Explore chart values` table instead.
+- Scheduled refresh, retries, caching or a last-good window. The host owns these.
+- Warehouse DDL migration runners; the SQL files are reviewed starting points.
+- A Looker Studio connector or API integration.
+- Authentication, authorization or a report server.
+- Automated accessibility certification.
+- A browser test runner in CI.
+- Live warehouse integration tests. The suite covers SQL construction, local
+  command execution, CSV/JSON parsing and Athena polling with a fake `aws`
+  command. Real provider credentials are not used.
+
+Next candidates, only with a real use case:
+
+1. A live Snowflake/BigQuery integration test against a disposable dataset.
+2. A client renderer that reuses the same contracts and adds a measured tooltip
+   and date explorer.
+3. A `--snapshot` diff command for comparing two evidence captures.
+4. A `doctor --source <id>` read-only connectivity check that never prints
+   credentials.
+
 ## v0.1.0 · 16 November 2026
 
 Implemented:

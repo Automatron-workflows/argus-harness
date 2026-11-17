@@ -111,6 +111,38 @@ bq query --use_legacy_sql=false --format=json --max_rows=100000 \
 - If `bq` is missing or the query fails, the snapshot is unavailable. It does
   not fall back to a local cache.
 
+## SQL CLI warehouses
+
+`sql-cli` runs an installed warehouse command and reads CSV or JSON on stdout.
+The query must return the five canonical aliases.
+
+| Preset | Command | Output |
+| --- | --- | --- |
+| `snowflake` | `snowsql` | CSV |
+| `postgres` | `psql --csv` | CSV |
+| `redshift` | `psql --csv` | CSV |
+| `duckdb` | `duckdb` | CSV |
+| `athena` | `aws athena` | JSON, polled |
+| `bigquery` | `bq query` | JSON |
+| `custom` | your command | CSV or JSON |
+
+```json
+{
+  "kind": "sql-cli",
+  "config": {
+    "preset": "snowflake",
+    "connection": "analytics",
+    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM analytics.public.metric_daily WHERE metric_date BETWEEN DATE '{{start}}' AND DATE '{{end}}'",
+    "format": "csv"
+  }
+}
+```
+
+`env` is an allowlist; only `PATH`, `HOME`, `TMPDIR` and the named variables
+reach the child. Keep credentials in the provider profile or environment.
+`{{start}}`, `{{end}}` and `{{days}}` are replaced before execution. See
+[Warehouses](WAREHOUSES.md) for each provider and the custom command contract.
+
 ## Custom adapter
 
 ```js

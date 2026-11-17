@@ -1,0 +1,16 @@
+{
+  "schema": "argus.source/1",
+  "id": "redshift",
+  "label": "AWS Redshift",
+  "description": "Long-format metric_daily table queried through psql. Use the Redshift endpoint and SSL settings in DATABASE_URL, or the PG* environment variables.",
+  "kind": "sql-cli",
+  "freshnessHours": 26,
+  "config": {
+    "preset": "redshift",
+    "connectionEnv": "DATABASE_URL",
+    "env": ["DATABASE_URL", "PGSSLMODE"],
+    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM analytics.metric_daily WHERE metric_date BETWEEN DATE '{{start}}' AND DATE '{{end}}' ORDER BY metric_key, metric_date",
+    "format": "csv",
+    "timeoutMs": 120000
+  }
+}

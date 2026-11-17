@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 · 17 November 2026
+
+- Added the `sql-cli` warehouse source: Snowflake, Postgres, Redshift, DuckDB,
+  Athena and a custom command contract.
+- Added `--source <id>` for running one dashboard contract against another
+  configured warehouse.
+- Added `init --template warehouse` with provider source files, SQL projection
+  examples, sample CSV and warehouse setup notes.
+- Added BigQuery custom `sql` projections.
+- Added Athena query polling, pagination and JSON result parsing.
+- Added a child-process environment allowlist.
+- Added 31 tests and `docs/WAREHOUSES.md`.
+
 ## 0.1.0 · 16 November 2026
 
 - Extracted the metric, calendar, status, series, audit, renderer and Looker

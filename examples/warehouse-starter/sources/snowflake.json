@@ -1,0 +1,19 @@
+{
+  "schema": "argus.source/1",
+  "id": "snowflake",
+  "label": "Snowflake",
+  "description": "Long-format metric_daily table queried through snowsql. Replace the connection and fully qualified table; keep the password in the snowsql profile, not this file.",
+  "kind": "sql-cli",
+  "freshnessHours": 26,
+  "config": {
+    "preset": "snowflake",
+    "connection": "YOUR_SNOWSQL_CONNECTION",
+    "database": "YOUR_DATABASE",
+    "schema": "YOUR_SCHEMA",
+    "warehouse": "YOUR_WAREHOUSE",
+    "role": "YOUR_ROLE",
+    "sql": "SELECT metric_key, metric_date, value, source, computed_at FROM YOUR_DATABASE.YOUR_SCHEMA.METRIC_DAILY WHERE metric_date BETWEEN DATE '{{start}}' AND DATE '{{end}}' ORDER BY metric_key, metric_date",
+    "format": "csv",
+    "timeoutMs": 120000
+  }
+}

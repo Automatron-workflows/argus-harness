@@ -1,5 +1,30 @@
 # Releases
 
+## v0.2.0 · 17 November 2026
+
+Warehouse boilerplate release. Source revision: the commit tagged `v0.2.0`.
+Tarball: `automatron-argus-harness-0.2.0.tgz`.
+
+Adds:
+
+- `sql-cli` source: Snowflake, Postgres, Redshift, DuckDB, Athena and a custom
+  command contract.
+- `--source <id>` to run one dashboard contract against another warehouse.
+- `init --template warehouse` with source boilerplates, provider SQL examples and
+  a sample CSV.
+- `docs/WAREHOUSES.md`.
+- BigQuery `config.sql` custom projection.
+- Athena polling/pagination and JSON result parsing.
+- Child-process environment allowlist.
+- 31 tests.
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.0/automatron-argus-harness-0.2.0.tgz
+```
+
 ## v0.1.0 · 17 November 2026
 
 Source revision: the commit tagged `v0.1.0`
