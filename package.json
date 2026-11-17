@@ -1,6 +1,6 @@
 {
   "name": "@automatron/argus-harness",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A small dashboard harness that keeps metric definitions, freshness and missing data visible across BigQuery, HTTP, CSV and static sources.",
   "private": true,
   "type": "module",

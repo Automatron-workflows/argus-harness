@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.4 · 17 November 2026
 
 - CSV output skips provider preamble lines before the canonical header (for
   example SnowSQL's connection banner).

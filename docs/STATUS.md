@@ -1,5 +1,11 @@
 # Status
 
+## v0.2.4 · 17 November 2026
+
+- CSV provider preamble handling.
+- 33 tests.
+- No contract or dashboard changes.
+
 ## v0.2.3 · 17 November 2026
 
 - Warehouse child processes use allowlisted environments.

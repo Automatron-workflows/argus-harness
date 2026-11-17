@@ -1,5 +1,22 @@
 # Releases
 
+## v0.2.4 · 17 November 2026
+
+Final warehouse boilerplate patch. Source revision: the commit tagged `v0.2.4`.
+Tarball: `automatron-argus-harness-0.2.4.tgz`.
+
+- CSV output skips provider preamble lines before the canonical header, such as
+  SnowSQL's connection banner.
+- 33 tests.
+- No contract or dashboard changes.
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.4/automatron-argus-harness-0.2.4.tgz
+```
+
 ## v0.2.3 · 17 November 2026
 
 Security/portability patch for warehouse child processes. Source revision: the

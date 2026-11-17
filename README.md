@@ -11,7 +11,7 @@ Extracted from [Argus](https://github.com/UpswitchEU/argus), the internal
 analytics dashboard at Upswitch.
 
 [Try the workshop](https://automatron-workflows.github.io/argus-harness/demo/) ·
-[Download v0.2.3](https://github.com/Automatron-workflows/argus-harness/releases/tag/v0.2.3) ·
+[Download v0.2.4](https://github.com/Automatron-workflows/argus-harness/releases/tag/v0.2.4) ·
 [Read the primitives](docs/PRIMITIVES.md) · [Audit](docs/ARGUS-AUDIT.md) ·
 [Looker Studio](docs/LOOKER-STUDIO.md)
 
@@ -53,7 +53,7 @@ Install the pinned `v0.1.0` tarball, or clone the repository for development:
 
 ```sh
 npm install --ignore-scripts \
-  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.3/automatron-argus-harness-0.2.3.tgz
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.4/automatron-argus-harness-0.2.4.tgz
 
 npx argus-harness init ./my-dashboard
 cd my-dashboard
