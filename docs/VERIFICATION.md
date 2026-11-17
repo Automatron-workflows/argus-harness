@@ -29,7 +29,12 @@ npm run check
 
 The public workshop is deployed at
 `https://automatron-workflows.github.io/argus-harness/demo/`. The `test` and
-`workshop` GitHub Actions workflows pass on the initial commit.
+`workshop` GitHub Actions workflows pass.
+
+The Argus reference is also hosted with the portfolio at
+`https://matthias-mandiau-portfolio.lovable.app/case-studies/upswitch/argus-results/harness.html`.
+Its audit reports 14 pass, 1 explicit-gap warning, 0 fail. The page is responsive
+at 320, 390, 768 and 1440px with no horizontal overflow.
 
 Inspected in Chrome at 1440×900 and 390×844:
 
