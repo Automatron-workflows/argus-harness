@@ -5,7 +5,7 @@ import { auditDashboard, evidenceExitCode } from "./audit.mjs";
 import { buildBigQuerySql } from "./bigquery.mjs";
 import { trailingWindow } from "./calendar.mjs";
 import { formatMetric } from "./format.mjs";
-import { bigQueryDdl, lookerFields, lookerFieldsCsv, lookerReadme } from "./looker.mjs";
+import { bigQueryDdl, lookerFields, lookerFieldsCsv, fieldsReadme, lookerReadme } from "./looker.mjs";
 import { loadProject, writeJson, inside } from "./project.mjs";
 import { renderDashboardPage } from "./render.mjs";
 import { warehouseDdl } from "./warehouse-ddl.mjs";
@@ -120,7 +120,7 @@ and a custom SQL command.
 5. Run \`node ${bin} render --project . --source bigquery --out dashboard.html\`.
 6. Run \`node ${bin} audit --project . --source bigquery --out evidence.json\`.
 7. Run \`node ${bin} looker --project . --out looker\` for the BigQuery/Looker
-   field map, or follow \`docs/WAREHOUSES.md\` for the other providers.
+   field map, or follow \`docs/WAREHOUSES.md\` for the other providers in the harness repository.
 
 The starter data is fictional. The audit is the gate; a rendered page alone is
 not evidence that the warehouse rows are fresh or complete.
@@ -275,7 +275,7 @@ async function fields(flags) {
   await mkdir(out, { recursive: true });
   await writeFile(join(out, "looker-fields.csv"), lookerFieldsCsv(project.metrics));
   await writeJson(join(out, "looker-fields.json"), lookerFields(project.metrics));
-  await writeFile(join(out, "README.md"), lookerReadme(project.config.name));
+  await writeFile(join(out, "README.md"), fieldsReadme(project.config.name));
   process.stdout.write(`Wrote ${out}/looker-fields.csv and looker-fields.json\n`);
 }
 

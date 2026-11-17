@@ -1,5 +1,23 @@
 # Releases
 
+## v0.2.2 · 17 November 2026
+
+Fixes the `fields` command README for non-BigQuery warehouses. Source revision:
+the commit tagged `v0.2.2`. Tarball:
+`automatron-argus-harness-0.2.2.tgz`.
+
+- `fields` now writes a provider-neutral Looker Studio field-map guide.
+- `init --template warehouse` points to the harness repository's
+  `docs/WAREHOUSES.md` explicitly.
+- 32 tests.
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.2/automatron-argus-harness-0.2.2.tgz
+```
+
 ## v0.2.1 · 17 November 2026
 
 Adds the portable warehouse DDL and field-map commands. Source revision: the

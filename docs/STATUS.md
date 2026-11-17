@@ -1,5 +1,11 @@
 # Status
 
+## v0.2.2 · 17 November 2026
+
+- Provider-neutral `fields` README.
+- Warehouse starter documentation path clarified.
+- 32 tests.
+
 ## v0.2.1 · 17 November 2026
 
 - Added portable `warehouse-ddl` for Snowflake, Postgres, Redshift and DuckDB.

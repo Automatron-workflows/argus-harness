@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 · 17 November 2026
+
+- `fields` writes a provider-neutral Looker Studio field-map guide.
+- The warehouse starter points to the harness repository's `docs/WAREHOUSES.md`.
+- 32 tests.
+
 ## 0.2.1 · 17 November 2026
 
 - Added `warehouse-ddl` for Snowflake, Postgres, Redshift and DuckDB: catalog,

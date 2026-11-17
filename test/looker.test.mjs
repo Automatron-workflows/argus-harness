@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { bigQueryDdl, lookerFields, lookerFieldsCsv, lookerReadme } from "../src/looker.mjs";
+import { bigQueryDdl, fieldsReadme, lookerFields, lookerFieldsCsv, lookerReadme } from "../src/looker.mjs";
 import { loadProject } from "../src/project.mjs";
 
 const project = await loadProject("examples/starter");
@@ -28,4 +28,7 @@ test("Looker Studio field map carries labels, units and aggregation", () => {
   assert.match(csv, /^field,label,type,semantic_type,default_aggregation,unit,direction,description/);
   assert.match(csv, /mrr_eur,Monthly recurring revenue/);
   assert.match(lookerReadme("Harbour"), /not an\s+automatic Looker Studio connector/);
+  const generic = fieldsReadme("Harbour");
+  assert.match(generic, /Connect Looker Studio to your warehouse/);
+  assert.doesNotMatch(generic, /Apply `bigquery\.sql`/);
 });
