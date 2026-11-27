@@ -30,7 +30,7 @@ test("init, doctor, render, audit and looker work from an empty directory", asyn
     assert.match(html, /Owner growth/);
     assert.match(html, /data-ah-dashboard="growth"/);
 
-    const audit = await run(process.execPath, [bin, "audit", "--project", dir, "--out", join(dir, "evidence.json")]);
+    const audit = await run(process.execPath, [bin, "audit", "--project", dir, "--now", "2026-11-15T12:00:00.000Z", "--out", join(dir, "evidence.json")]);
     assert.match(audit.stdout, /pass/);
     const evidence = JSON.parse(await readFile(join(dir, "evidence.json"), "utf8"));
     assert.equal(evidence.schema, "argus.evidence/1");

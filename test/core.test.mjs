@@ -116,10 +116,11 @@ test("a stale or empty snapshot fails the audit", async () => {
   const project = await loadProject(root);
   const dashboard = project.dashboards.get("growth");
   const stale = validateSnapshot(await read("demo/data/snapshot-stale.json"));
+  const shortBudget = { ...project.sources.get(dashboard.source), freshnessHours: 36 };
   const staleEvidence = auditDashboard({
     dashboard,
     catalog: project.metrics,
-    source: project.sources.get(dashboard.source),
+    source: shortBudget,
     snapshot: stale,
     now: new Date("2026-11-15T12:00:00.000Z"),
   });
@@ -130,7 +131,7 @@ test("a stale or empty snapshot fails the audit", async () => {
   const emptyEvidence = auditDashboard({
     dashboard,
     catalog: project.metrics,
-    source: project.sources.get(dashboard.source),
+    source: shortBudget,
     snapshot: empty,
     now: new Date("2026-11-15T12:00:00.000Z"),
   });

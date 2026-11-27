@@ -1,5 +1,22 @@
 # Releases
 
+## v0.2.5 · 27 November 2026
+
+Maintenance patch. Source revision: the commit tagged `v0.2.5`. Tarball:
+`automatron-argus-harness-0.2.5.tgz`.
+
+- The static starter snapshot uses a one-year freshness budget. A copied starter
+  stays runnable; replace the budget with your source's real value.
+- The CLI starter audit test uses a fixed audit time.
+- 33 tests.
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.2.5/automatron-argus-harness-0.2.5.tgz
+```
+
 ## v0.2.4 · 17 November 2026
 
 Final warehouse boilerplate patch. Source revision: the commit tagged `v0.2.4`.

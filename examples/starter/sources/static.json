@@ -2,9 +2,9 @@
   "schema": "argus.source/1",
   "id": "starter-static",
   "label": "Starter snapshot",
-  "description": "A measured snapshot checked into data/snapshot.json. The starter uses fictional rows so the harness can run without an account.",
+  "description": "A fictional starter snapshot checked into data/snapshot.json. The one-year freshness budget keeps the template runnable; replace it with your source's real budget.",
   "kind": "static-json",
-  "freshnessHours": 36,
+  "freshnessHours": 8760,
   "config": {
     "path": "data/snapshot.json"
   }

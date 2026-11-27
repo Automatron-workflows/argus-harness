@@ -1,5 +1,11 @@
 # Status
 
+## v0.2.5 · 27 November 2026
+
+- The static starter no longer expires after three days.
+- Deterministic starter audit test.
+- 33 tests.
+
 ## v0.2.4 · 17 November 2026
 
 - CSV provider preamble handling.

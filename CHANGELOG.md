@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.5 · 27 November 2026
+
+- The static starter snapshot uses a one-year freshness budget so the template
+  does not expire after three days. Replace it with the source's real budget.
+- The CLI starter audit test is pinned to a fixed audit time.
+- 33 tests.
+
 ## 0.2.4 · 17 November 2026
 
 - CSV output skips provider preamble lines before the canonical header (for
