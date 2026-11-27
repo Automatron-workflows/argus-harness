@@ -33,6 +33,20 @@ and `athena` source files plus an offline `custom-local` fixture. The dashboard
 uses `bigquery` by default; `--source` runs the same dashboard contract against
 another provider.
 
+## Doctor checks
+
+```sh
+node ../bin/argus-harness.mjs doctor --project .
+node ../bin/argus-harness.mjs doctor --project . --source snowflake
+node ../bin/argus-harness.mjs doctor --project . --source snowflake --live
+```
+
+Doctor is offline by default and validates files, paths and placeholders.
+`--source <id>` limits the report to one source. `--live` runs `SELECT 1`
+through that provider's own command (BigQuery uses `bq`; Athena starts and polls
+a query). It reports the provider and failure reason, and never prints
+credentials. A failed live check exits non-zero.
+
 `warehouse-ddl` emits the canonical tables and views for Snowflake, Postgres,
 Redshift or DuckDB. BigQuery uses `argus-harness looker`. `fields` emits the
 Looker Studio field map without BigQuery-specific SQL.

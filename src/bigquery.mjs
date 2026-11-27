@@ -60,6 +60,26 @@ export function bqEnv(env = process.env) {
   return result;
 }
 
+export async function runBigQueryConnectivity({ source, bqBin = process.env.BQ_BIN || "bq" }) {
+  const args = [
+    "query",
+    "--use_legacy_sql=false",
+    "--format=json",
+    "SELECT 1 AS ok",
+  ];
+  try {
+    const { stdout } = await run(bqBin, args, { maxBuffer: 1024 * 1024, encoding: "utf8", env: bqEnv() });
+    JSON.parse(stdout.trim());
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      throw new BigQueryUnavailable("The bq CLI is not installed or not on PATH. Set BQ_BIN or install the Google Cloud SDK.");
+    }
+    const message = String(error.stderr || error.message || "bq query failed").trim();
+    throw new BigQueryUnavailable(message.slice(0, 1200));
+  }
+}
+
 export async function runBigQuery({ source, window, bqBin = process.env.BQ_BIN || "bq", maxBuffer = 64 * 1024 * 1024 }) {
   const sql = buildBigQuerySql(source, window);
   const args = [

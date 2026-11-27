@@ -1,5 +1,11 @@
 # Status
 
+## v0.3.0 · 27 November 2026
+
+- `doctor --source <id> --live` connectivity check for BigQuery and every
+  sql-cli provider.
+- 35 tests.
+
 ## v0.2.5 · 27 November 2026
 
 - The static starter no longer expires after three days.

@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildBigQuerySql, bqEnv } from "../src/bigquery.mjs";
 import { loadProject } from "../src/project.mjs";
-import { childEnv, parseRows, runSqlCli, SqlCliUnavailable } from "../src/sql-cli.mjs";
+import { childEnv, parseRows, runSqlCli, runSqlCliConnectivity, SqlCliUnavailable } from "../src/sql-cli.mjs";
 import { validateDashboard, validateMetric, validateSource, HarnessError } from "../src/schema.mjs";
 import { loadSnapshot } from "../src/sources.mjs";
 import { warehouseDdl } from "../src/warehouse-ddl.mjs";
@@ -235,4 +235,40 @@ esac
   assert.equal(rows[0].metric_key, "mrr_eur");
   assert.equal(rows[0].value, "120");
   await rm(dir, { recursive: true, force: true });
+});
+
+test("sql-cli connectivity runs SELECT 1 through the preset command", async () => {
+  const source = validateSource({
+    schema: "argus.source/1",
+    id: "fake",
+    label: "Fake warehouse",
+    description: "A local CSV command",
+    kind: "sql-cli",
+    config: {
+      preset: "custom",
+      command: process.execPath,
+      args: ["-e", "process.stdout.write('ok')"],
+      format: "csv",
+      sql: "SELECT * FROM metric_daily WHERE metric_date BETWEEN '{{start}}' AND '{{end}}'",
+    },
+  });
+  assert.equal(await runSqlCliConnectivity({ source }), true);
+});
+
+test("sql-cli connectivity reports a missing command", async () => {
+  const source = validateSource({
+    schema: "argus.source/1",
+    id: "missing",
+    label: "Missing",
+    description: "Missing",
+    kind: "sql-cli",
+    config: { preset: "custom", command: "definitely-not-a-real-command-xyz", sql: "SELECT 1" },
+  });
+  try {
+    await runSqlCliConnectivity({ source });
+    assert.fail("expected a failure");
+  } catch (error) {
+    assert.equal(error.name, "SqlCliUnavailable");
+    assert.match(error.message, /not installed/);
+  }
 });

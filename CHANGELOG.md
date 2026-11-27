@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 · 27 November 2026
+
+- `doctor` accepts `--source <id>` and `--live`: a `SELECT 1` connectivity check
+  through BigQuery or any sql-cli provider, with no credentials printed.
+- 35 tests.
+
 ## 0.2.5 · 27 November 2026
 
 - The static starter snapshot uses a one-year freshness budget so the template

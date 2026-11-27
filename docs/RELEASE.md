@@ -1,5 +1,22 @@
 # Releases
 
+## v0.3.0 · 27 November 2026
+
+Feature release. Source revision: the commit tagged `v0.3.0`. Tarball:
+`automatron-argus-harness-0.3.0.tgz`.
+
+- `doctor --source <id> --live` runs a `SELECT 1` connectivity check through the
+  provider's own command (BigQuery `bq`, SnowSQL, psql, DuckDB, AWS Athena).
+- Offline doctor still validates files, paths and placeholders.
+- 35 tests.
+
+Install:
+
+```sh
+npm install --ignore-scripts \
+  https://github.com/Automatron-workflows/argus-harness/releases/download/v0.3.0/automatron-argus-harness-0.3.0.tgz
+```
+
 ## v0.2.5 · 27 November 2026
 
 Maintenance patch. Source revision: the commit tagged `v0.2.5`. Tarball:

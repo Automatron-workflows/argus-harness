@@ -202,10 +202,8 @@ async function aws(args, env, timeoutMs) {
   }
 }
 
-export async function runSqlCli({ source, window, env = process.env, projectRoot }) {
+function buildInvocation(source, sql, env, projectRoot) {
   const config = source.config;
-  const sql = applySqlTemplate(config.sql, window);
-  if (config.preset === "athena") return runAthena({ source, sql, env, timeoutMs: config.timeoutMs });
   const preset = PRESETS[config.preset] ?? PRESETS.custom;
   const command = config.command ?? preset.command;
   if (!command) throw new SqlCliUnavailable("sql-cli source has no command");
@@ -224,19 +222,48 @@ export async function runSqlCli({ source, window, env = process.env, projectRoot
   } else if (config.cwd) {
     cwd = resolve(config.cwd);
   }
+  return { command, args, input, cwd, format };
+}
+
+export async function runSqlCli({ source, window, env = process.env, projectRoot }) {
+  const sql = applySqlTemplate(source.config.sql, window);
+  if (source.config.preset === "athena") return runAthena({ source, sql, env, timeoutMs: source.config.timeoutMs });
+  const invocation = buildInvocation(source, sql, env, projectRoot);
   try {
-    const { stdout } = await run(command, args, {
+    const { stdout } = await run(invocation.command, invocation.args, {
       env: childEnv(source, env),
-      timeout: config.timeoutMs,
+      timeout: source.config.timeoutMs,
       maxBuffer: 64 * 1024 * 1024,
       encoding: "utf8",
-      ...(cwd ? { cwd } : {}),
-      ...(input ? { input } : {}),
+      ...(invocation.cwd ? { cwd: invocation.cwd } : {}),
+      ...(invocation.input ? { input: invocation.input } : {}),
     });
-    return parseRows(stdout, format);
+    return parseRows(stdout, invocation.format);
   } catch (error) {
     if (error instanceof SqlCliUnavailable) throw error;
-    if (error.code === "ENOENT") throw new SqlCliUnavailable(`The command "${command}" is not installed or not on PATH`);
+    if (error.code === "ENOENT") throw new SqlCliUnavailable(`The command "${invocation.command}" is not installed or not on PATH`);
+    throw new SqlCliUnavailable(String(error.stderr || error.message || "warehouse command failed").trim().slice(0, 1200));
+  }
+}
+
+export async function runSqlCliConnectivity({ source, env = process.env, projectRoot }) {
+  if (source.config.preset === "athena") {
+    return runAthena({ source, sql: "SELECT 1 AS ok", env, timeoutMs: source.config.timeoutMs });
+  }
+  const invocation = buildInvocation(source, "SELECT 1 AS ok", env, projectRoot);
+  try {
+    await run(invocation.command, invocation.args, {
+      env: childEnv(source, env),
+      timeout: source.config.timeoutMs,
+      maxBuffer: 64 * 1024 * 1024,
+      encoding: "utf8",
+      ...(invocation.cwd ? { cwd: invocation.cwd } : {}),
+      ...(invocation.input ? { input: invocation.input } : {}),
+    });
+    return true;
+  } catch (error) {
+    if (error instanceof SqlCliUnavailable) throw error;
+    if (error.code === "ENOENT") throw new SqlCliUnavailable(`The command "${invocation.command}" is not installed or not on PATH`);
     throw new SqlCliUnavailable(String(error.stderr || error.message || "warehouse command failed").trim().slice(0, 1200));
   }
 }

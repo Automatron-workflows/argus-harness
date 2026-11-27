@@ -10,6 +10,8 @@ import { loadProject, writeJson, inside } from "./project.mjs";
 import { renderDashboardPage } from "./render.mjs";
 import { warehouseDdl } from "./warehouse-ddl.mjs";
 import { loadSnapshot } from "./sources.mjs";
+import { runSqlCliConnectivity, SqlCliUnavailable } from "./sql-cli.mjs";
+import { runBigQueryConnectivity, BigQueryUnavailable } from "./bigquery.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "..");
@@ -22,7 +24,7 @@ const HELP = `Argus Harness — dashboards that keep definitions, freshness and 
 
 Usage:
   argus-harness init <dir> [--template starter|warehouse]
-  argus-harness doctor [--project <dir>] [--json]
+  argus-harness doctor [--project <dir>] [--source <id>] [--live] [--json]
   argus-harness catalog [--project <dir>] [--json]
   argus-harness render [--project <dir>] [--dashboard <id>] [--source <id>] [--snapshot <file>] [--out <file>] [--now <iso>]
   argus-harness audit [--project <dir>] [--dashboard <id>] [--source <id>] [--snapshot <file>] [--out <file>] [--strict] [--json] [--now <iso>]
@@ -145,8 +147,20 @@ The starter data is fictional. Replace it with your own measured rows.
   process.stdout.write(`Created ${destination} (${template})\nNext: cd ${destination} && node ${bin} doctor --project .\n`);
 }
 
+async function runSourceCheck(project, source) {
+  if (source.kind === "bigquery") return runBigQueryConnectivity({ source });
+  if (source.kind === "sql-cli") return runSqlCliConnectivity({ source, env: process.env, projectRoot: project.root });
+  throw new Error(`The ${source.kind} source has no live check`);
+}
+
 async function doctor(flags) {
   const project = await projectFrom(flags);
+  if (flags.source) {
+    const sourceId = flagValue(flags, "source");
+    if (!project.sources.has(sourceId)) {
+      throw new Error(`Unknown source "${sourceId}". Available: ${[...project.sources.keys()].join(", ")}`);
+    }
+  }
   const checks = [];
   checks.push(["project", "ok", project.config.id]);
   checks.push(["metrics", "ok", `${project.metrics.size}`]);
@@ -175,7 +189,21 @@ async function doctor(flags) {
       checks.push([`source:${source.id}`, "info", `${source.config.preset} · ${source.config.command ?? commands[source.config.preset] ?? "custom"}`]);
     }
   }
-  const failed = checks.filter(([, level]) => level === "fail").length;
+  let failed = checks.filter(([, level]) => level === "fail").length;
+  if (flags.live) {
+    const selected = flags.source ? String(flags.source) : null;
+    const candidates = selected ? [project.sources.get(selected)] : [...project.sources.values()];
+    for (const source of candidates.filter((item) => item.kind === "bigquery" || item.kind === "sql-cli")) {
+      try {
+        await runSourceCheck(project, source);
+        checks.push([`live:${source.id}`, "ok", "SELECT 1"]);
+      } catch (error) {
+        const level = error.name === SqlCliUnavailable.name || error.name === BigQueryUnavailable.name ? "fail" : "fail";
+        checks.push([`live:${source.id}`, level, String(error.message ?? error).slice(0, 120)]);
+        failed += 1;
+      }
+    }
+  }
   if (flags.json) {
     process.stdout.write(JSON.stringify({ project: project.config.id, checks, failed }, null, 2) + "\n");
   } else {

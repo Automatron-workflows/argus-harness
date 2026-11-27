@@ -40,6 +40,47 @@ test("init, doctor, render, audit and looker work from an empty directory", asyn
     assert.match(looker.stdout, /bigquery.sql/);
     assert.match(await readFile(join(dir, "looker", "bigquery.sql"), "utf8"), /metric_catalog/);
     assert.match(await readFile(join(dir, "looker", "looker-fields.csv"), "utf8"), /mrr_eur/);
+
+    await writeFile(
+      join(dir, "sources", "fake.json"),
+      JSON.stringify({
+        schema: "argus.source/1",
+        id: "fake",
+        label: "Fake warehouse",
+        description: "A local command that always connects.",
+        kind: "sql-cli",
+        config: {
+          preset: "custom",
+          command: process.execPath,
+          args: ["-e", "process.stdout.write('ok')"],
+          format: "csv",
+          sql: "SELECT * FROM metric_daily WHERE metric_date BETWEEN '{{start}}' AND '{{end}}'",
+        },
+      }),
+    );
+    const liveOk = await run(process.execPath, [bin, "doctor", "--project", dir, "--source", "fake", "--live", "--json"]);
+    const liveOkReport = JSON.parse(liveOk.stdout);
+    assert.ok(liveOkReport.checks.some((check) => check[0] === "live:fake" && check[1] === "ok"));
+    assert.equal(liveOkReport.failed, 0);
+
+    await writeFile(
+      join(dir, "sources", "broken.json"),
+      JSON.stringify({
+        schema: "argus.source/1",
+        id: "broken",
+        label: "Broken warehouse",
+        description: "A command that does not exist.",
+        kind: "sql-cli",
+        config: { preset: "custom", command: "definitely-not-a-real-command-xyz", sql: "SELECT 1" },
+      }),
+    );
+    try {
+      await run(process.execPath, [bin, "doctor", "--project", dir, "--source", "broken", "--live"]);
+      assert.fail("expected a non-zero exit");
+    } catch (error) {
+      assert.equal(error.code, 1);
+      assert.match(error.stdout, /fail\s+live:broken/);
+    }
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
